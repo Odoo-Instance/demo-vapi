@@ -9,7 +9,7 @@
     'description': """
  """,
     'category': 'Customization',
-    'depends': ['base'],
+    'depends': ['base','hr_timesheet'],
     'data': [
         
     ],
@@ -17,4 +17,13 @@
     'application': False,
     'auto_install': False,
     'license': 'LGPL-3',
+    
+    'data': [
+        'views/templates.xml',
+    ],
+    
+    'assets': {
+         'web.assets_frontend': [
+            'awb_vapi_custom/static/js/timesheet_popup.js',
+        ],},
 }
