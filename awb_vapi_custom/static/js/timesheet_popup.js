@@ -50,11 +50,156 @@ var item = document.createElement('option');
            item.value = activity[i].id
            ActivitySelect.appendChild(item);
            }
+var tag = result['tag']
+var TagSelect = document.getElementById('activity');
+for (let i = 0; i < activity.length; i++) {
+var item = document.createElement('option');
+           item.text = tag[i].name
+           item.id = tag[i].id
+           item.value = tag[i].name
+           TagSelect.appendChild(item);
+           }
 $( "#date_start" ).datepicker({changeMonth: true,changeYear: true,dateFormat: "yy-mm-dd"});
     });
 
 });
 
+});
+
+$(document).ready(function() {
+    var $submit = $(".button_class").hide()
+    var $edit = $(".edit_button_class").hide(),
+
+        $cbs = $('input[name="check"]').click(function() {
+
+        ajax.jsonRpc("/usecheck/records", 'call',{}).then(function(result){
+       if (result['employee'] === "true"){
+        $edit.toggle( $cbs.is(":checked") );
+
+       }
+       else{
+       $submit.toggle( $cbs.is(":checked") );
+       }
+
+
+  });
+
+
+        });
+
+});
+
+$('.button_class').on('click','.approve',function(){
+console.log('sucess')
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i].id);
+     }
+  }
+  ajax.jsonRpc("/approve/timesheets/records", 'call',{'checked':checkboxesChecked}).then(function(result){
+  window.location.reload();});
+});
+
+$('.button_class').on('click','.reject',function(){
+console.log('sucess')
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i].id);
+     }
+  }
+  ajax.jsonRpc("/reject/timesheets/records", 'call',{'checked':checkboxesChecked}).then(function(result){
+  if (result['result'] === "true"){
+  window.location.reload();
+  }
+  else{
+  alert("The timesheet is already validated");
+ window.location.reload();
+                        return false;
+  }
+
+  });
+});
+
+$('.edit_button_class').on('click','.delete',function(){
+console.log('sucess')
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i].id);
+     }
+  }
+  ajax.jsonRpc("/delete/timesheets/records", 'call',{'checked':checkboxesChecked}).then(function(result){
+  if (result['result'] === "true"){
+  window.location.reload();
+  }
+  else{
+  alert("You can delete timesheet only in draft state");
+window.location.reload();
+                        return false;
+  }
+
+  });
+});
+
+$('.edit_button_class').on('click','.submit',function(){
+console.log('sucess')
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        checkboxesChecked.push(checkboxes[i].id);
+     }
+  }
+  ajax.jsonRpc("/submit/timesheets/records", 'call',{'checked':checkboxesChecked}).then(function(result){
+  console.log(result['result'])
+  if (result['result'] != "true" ){
+  console.log('ffffffffffffffffff')
+  alert("Please submit atleast 40 hours of draft timesheet");
+window.location.reload();
+                        return false;
+  }
+  else{
+  window.location.reload();
+  }
+  });
+});
+
+$('.edit_button_class').on('click','#edit',function(){
+console.log('sucess')
+var checkboxes = document.getElementsByName('check');
+
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+            if (checkboxes[i].title != 'draft'){
+            $("#edit").removeAttr("disabled");
+
+alert("You can edit/update timeheet only in draft state");
+window.location.reload();
+                        return false;
+            }
+        checkboxesChecked.push(checkboxes[i].id);
+     }
+  }
+  if (checkboxesChecked.length > 1) {
+   $("#edit").removeAttr("disabled");
+   return false;
+  }
+  ajax.jsonRpc("/edit/timesheets/records", 'call',{'checked':checkboxesChecked}).then(function(result){
+
+  $( "#date" ).datepicker({changeMonth: true,changeYear: true,dateFormat: "yy-mm-dd"});
+  document.getElementById("name").value = result['timesheet'][0].name;
+  document.getElementById("timesheet_id").value = result['timesheet'][0].id;
+  document.getElementById("date").value = result['timesheet'][0].date;
+  document.getElementById("hours").value = result['timesheet'][0].hours;
+
+
+  });
 });
 
 });
