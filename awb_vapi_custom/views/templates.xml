@@ -1,226 +1,418 @@
 <!--<odoo>-->
-<odoo>
+<odoo xmlns:th="http://www.w3.org/1999/xhtml">
     <template id="timesheet_button_layout" name="timesheet_button_entry"
               inherit_id="portal.portal_breadcrumbs" priority="36">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="after">
-            <div class="o_download_pdf btn-toolbar flex-sm-nowrap" id="mydiv">
-                <div class="my_div">
-                    <a role="button"
-                       class="btn btn-secondary flex-grow-1 mb-1 createButton"
-                       data-toggle="modal"
-                       id='myModal' data-target='#warrantypopup' href="#">
-                        <t>Create Timesheet</t>
-                        <!--                        <t t-set="url" t-value="'/create/timesheets'"/>-->
-                    </a>
+            <t t-if="page_name == 'timesheet' or timesheet"
+               t-attf-class="breadcrumb-item #{'active' if not timesheet else ''}">
+                <div class="o_download_pdf btn-toolbar flex-sm-nowrap"
+                     id="mydiv">
+                    <div class="my_div">
+                        <a role="button"
+                           class="btn btn-secondary flex-grow-1 mb-1 createButton"
+                           data-toggle="modal"
+                           id='myModal' data-target='#warrantypopup' href="#">
+                            <t>Create Timesheet</t>
+                            <!--                        <t t-set="url" t-value="'/create/timesheets'"/>-->
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <form action="/timesheet/request/submit" method="post"
-                  id="formtime" enctype="multipart/form-data">
-                <input type="hidden" name="csrf_token"
-                       t-att-value="request.csrf_token()"/>
-                <div id="warrantypopup" class="modal fade" style="heght:50%">
-                    <div class="modal-dialog modal-content"
-                         style="border:solid 2px white; min-height:200px;max-width:800px;margin-top:10px">
-                        <div class="modal-body" id="pop_html">
-                            <a href="#"
-                               class="o_popup_btn_close o_not_editable o_default_snippet_text pull-right"
-                               data-dismiss="modal" style="font-size:30px">×
-                            </a>
-                            <br/>
-                            <div style="margin-top:-48px">
-                                <h2 style="text-align:center; font-size 18px; font-weight:bold"
-                                    class="o_default_snippet_text">
-                                    Create Timesheet
-                                </h2>
+                <form action="/timesheet/request/submit" method="post"
+                      id="formtime" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token"
+                           t-att-value="request.csrf_token()"/>
+                    <div id="warrantypopup" class="modal fade"
+                         style="heght:50%">
+                        <div class="modal-dialog modal-content"
+                             style="border:solid 2px white; height:700px;width:500px;margin-top:50px">
+                            <div class="modal-body" id="pop_html">
+                                <a href="#"
+                                   class="o_popup_btn_close o_not_editable o_default_snippet_text pull-right"
+                                   data-dismiss="modal" style="font-size:30px">×
+                                </a>
+                                <br/>
+                                <div style="margin-top:-48px">
+                                    <h2 style="text-align:center; font-size 18px; font-weight:bold"
+                                        class="o_default_snippet_text">
+                                        Create Timesheet
+                                    </h2>
+                                </div>
+                                <br/>
+                                <table border="1" style="margin:auto;">
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Employee
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <select class="form-control o_website_form_input"
+                                                    id="employee"
+                                                    name="employee" required=""
+                                            >
+                                                <option></option>
+                                                <!--                                            <option value="">Select Employee-->
+                                                <!--                                            </option>-->
+                                                <!--                                            <t t-foreach="employee"-->
+                                                <!--                                               t-as="emp">-->
+                                                <!--                                                <option t-att-value="emp['id']">-->
+                                                <!--                                                    <t t-esc="emp['name']"/>-->
+                                                <!--                                                </option>-->
+                                                <!--                                            </t>-->
+                                            </select>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Client
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <select class="form-control o_website_form_input"
+                                                    id="client" name="client"
+                                            >
+                                                <option></option>
+                                            </select>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Project
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <select class="form-control o_website_form_input"
+                                                    id="project" name="project"
+                                                    required=""
+                                            >
+                                                <option></option>
+
+                                            </select>
+
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label style="white-space: nowrap;"
+                                                   class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Project Type
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <select class="form-control o_website_form_input"
+                                                    id="activity"
+                                                    name="activity" required=""
+                                            >
+                                                <option></option>
+
+                                            </select>
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label style="white-space: nowrap; "
+                                                   class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Activity
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <select class="form-control o_website_form_input"
+                                                    id="project_type"
+                                                    name="projectt" required=""
+                                            >
+                                                <option></option>
+
+                                            </select>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label style="white-space: nowrap;"
+                                                   class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Activity Type
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+                                            <select class="form-control o_website_form_input"
+                                                    id="activitytype" name="activitytype">
+                                                <option></option>
+                                                <option>billable_time</option>
+                                                <option>billable_fixed</option>
+                                                <option>non_billable</option>
+                                                <option>timesheet_revenues</option>
+                                                <option>service_revenues</option>
+                                                <option>other_revenues</option>
+                                                <option>other_costs</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Date
+                                            </label>
+                                        </td>
+
+                                        <td style="width:250px">
+                                            <input style="width:250px" type="text" id="date_start"
+                                                   name="date" required=""
+                                                 />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Hours
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+                                            <input type="text"
+                                                   class="form-control o_website_form_input"
+                                                   name="hours" required=""/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Notes
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+
+                                            <input type="text"
+                                                   class="form-control o_website_form_input"
+                                                   name="notes"/>
+
+                                        </td>
+                                    </tr>
+<!--                                    <tr>-->
+<!--                                        <td style="width:250px">-->
+<!--                                            <label style="white-space: nowrap; "-->
+<!--                                                   class="col-md-3 col-sm-4 control-label date_to"-->
+<!--                                                   for="to">Approval Status-->
+<!--                                            </label>-->
+<!--                                        </td>-->
+<!--                                        <td style="width:250px">-->
+<!--                                            <select class="form-control o_website_form_input"-->
+<!--                                                    id="status" name="status">-->
+<!--                                                <option></option>-->
+<!--                                                <option>draft</option>-->
+<!--                                                <option>validated</option>-->
+<!--                                            </select>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+                                    <tr>
+                                        <td style="width:250px">
+                                            <label class="col-md-3 col-sm-4 control-label date_to"
+                                                   for="to">Platform
+                                            </label>
+                                        </td>
+                                        <td style="width:250px">
+                                            <select class="form-control o_website_form_input"
+                                                    id="platform" name="platform">
+                                                <option></option>
+                                                <option>Outsystem</option>
+                                                <option>Appia</option>
+                                                <option>UI/UX</option>
+                                                <option>Not_Applicable</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div style="padding-top:20px"
+                                     class="form-group row form-field">
+                                    <div style="padding:0 45% 0 45%">
+                                        <button type="submit"
+                                                id="warranty_submit"
+                                                class="btn btn-primary btn-md o_website_form_send">
+                                            Create
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <br/>
-                            <table border="1" style="margin:auto;">
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Employee
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <select class="form-control o_website_form_input"
-                                                id="employee" name="employee" required=""
-                                        >
-                                            <option> </option>
-                                            <!--                                            <option value="">Select Employee-->
-                                            <!--                                            </option>-->
-                                            <!--                                            <t t-foreach="employee"-->
-                                            <!--                                               t-as="emp">-->
-                                            <!--                                                <option t-att-value="emp['id']">-->
-                                            <!--                                                    <t t-esc="emp['name']"/>-->
-                                            <!--                                                </option>-->
-                                            <!--                                            </t>-->
-                                        </select>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Client
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <select class="form-control o_website_form_input"
-                                                id="client" name="client"
-                                        >
-                                            <option> </option>
-                                        </select>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Project
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <select class="form-control o_website_form_input"
-                                                id="project" name="project" required=""
-                                        >
-                                        <option> </option>
-
-                                        </select>
-
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label style="white-space: nowrap; "
-                                               class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Project Type
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <select class="form-control o_website_form_input"
-                                                id="project_type"
-                                                name="projectt" required=""
-                                        >
-                                    <option> </option>
-
-                                        </select>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Activity
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <input type="text"
-                                               class="form-control o_website_form_input"
-                                               name="activity"/>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label style="white-space: nowrap;"
-                                               class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Activity Type
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-                                        <input type="text"
-                                               class="form-control o_website_form_input"
-                                               name="activityt"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Date
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-                                        <input type="text" id="date_start"
-                                               name="date" required=""
-                                               placeholder='YYYY/DD/MM'/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Hours
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-                                        <input type="text"
-                                               class="form-control o_website_form_input"
-                                               name="hours" required=""/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Notes
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <input type="text"
-                                               class="form-control o_website_form_input"
-                                               name="notes"/>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label style="white-space: nowrap; "
-                                               class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Approval Status
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-                                        <select class="form-control o_website_form_input"
-                                                id="status" name="status">
-                                            <option> </option>
-                                            <option>draft</option>
-                                            <option>validated</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width:250px">
-                                        <label class="col-md-3 col-sm-4 control-label date_to"
-                                               for="to">Platform
-                                        </label>
-                                    </td>
-                                    <td style="width:250px">
-
-                                        <input type="text"
-                                               class="form-control o_website_form_input"
-                                               name="platform"/>
-
-                                    </td>
-                                </tr>
-                            </table>
+                        </div>
+                    </div>
+                </form>
+                <form action="/edit/request" method="post"
+                      id="formtime" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token"
+                    />
+                    <div id="editpopup" class="modal fade"
+                         style="heght:50%">
+                        <div class="modal-dialog modal-content"
+                             style="border:solid 2px white; height:500px;width:500px;margin-top:50px">
+                            <div class="modal-body" id="pop_html">
+                                <a href="#"
+                                   class="o_popup_btn_close o_not_editable o_default_snippet_text pull-right"
+                                   data-dismiss="modal" style="font-size:30px">×
+                                </a>
+                                <br/>
+                                <div style="margin-top:-48px">
+                                    <h2 style="text-align:center; font-size 18px; font-weight:bold"
+                                        class="o_default_snippet_text">
+                                        Edit Timesheet
+                                    </h2>
+                                </div>
+                                <br/>
+                                <input type="text" id="timesheet_id"
+                                       class="form-control o_website_form_input"
+                                       name="timesheet" style="display:none;"/>
+                                <label class="col-md-3 col-sm-4 control-label"
+                                       for="name">Description
+                                </label>
+                                <div class="col-12">
+                                    <input type="text" id="name"
+                                           class="form-control o_website_form_input"
+                                           name="name"/>
+                                </div>
+                                <br/>
+                                <label class="col-md-3 col-sm-4 control-label"
+                                       for="date">Date
+                                </label>
+                                <div class="col-12">
+                                    <input type="text" id="date"
+                                           class="form-control o_website_form_input"
+                                           name="date"/>
+                                </div>
+                                <br/>
+                                <label class="col-md-3 col-sm-4 control-label"
+                                       for="hours">Hours
+                                </label>
+                                <div class="col-12">
+                                    <input type="text" id="hours"
+                                           class="form-control o_website_form_input"
+                                           name="hours"/>
+                                </div>
+                            </div>
                             <div style="padding-top:20px"
                                  class="form-group row form-field">
                                 <div style="padding:0 45% 0 45%">
-                                    <button type="submit" id="warranty_submit"
+                                    <button type="submit"
+                                            id="edit_submit"
                                             class="btn btn-primary btn-md o_website_form_send">
-                                        Submit
+                                        Update
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="timesheet_checkbox" name="timesheet_checkbox"
+              inherit_id="hr_timesheet.portal_my_timesheets">
+
+        <xpath expr="//thead/tr/th" position="before">
+            <th></th>
+        </xpath>
+        <xpath expr="//thead/tr[3]" position="inside">
+            <th>
+                Project Type
+            </th>
+            <th>
+                Activity Type
+            </th>
+            <th>
+                Platform
+            </th>
+            <th>
+                Status
+            </th>
+        </xpath>
+        <xpath expr="//tbody/t/tr/td" position="before">
+            <div id="checkboxes">
+                <td>
+                    <span class="checkbox"
+                          t-att-id="timesheet.id">
+                        <input t-att-id="timesheet.id"
+                               t-att-title="timesheet.validated_status"
+                               name="check" type="checkbox"/>
+                    </span>
+                </td>
+            </div>
+        </xpath>
+        <xpath expr="//tbody/t/tr" position="inside">
+            <td>
+                <span t-esc="timesheet.project_type"
+                      t-att-title="timesheet.id"/>
+            </td>
+            <td>
+                <span t-esc="timesheet.timesheet_invoice_type"
+                      t-att-title="timesheet.id"/>
+            </td>
+            <td>
+                <span t-esc="timesheet.area"
+                      t-att-title="timesheet.id"/>
+            </td>
+            <td>
+                <span t-esc="timesheet.validated_status"
+                      t-att-title="timesheet.id"/>
+            </td>
+        </xpath>
+
+        <xpath expr="//t/t[4]/t" position="inside">
+            <span class="button_class" style="margin-right:78.5%;display:none">
+                <button class="approve"
+
+
+                        id="approve"
+
+                >
+                    Approve
+                </button>
+                <button class="reject"
+
+
+                        id="reject"
+
+                >
+                    Reject
+                </button>
+            </span>
+        </xpath>
+        <xpath expr="//t/t[4]/t" position="inside">
+            <span class="edit_button_class" style="margin-right:78.5%;display:none;">
+
+                <a role="button"
+                   class="btn btn-secondary flex-grow-1 mb-1 createButton"
+                   data-toggle="modal"
+                   id='edit' data-target='#editpopup' href="#">
+                    <t>Edit</t>
+                </a>
+
+
+                <button class="delete"
+
+
+                        id="delete"
+
+                >
+                    Delete
+                </button>
+                 <button class="submit"
+
+
+                        id="submit"
+
+                >
+                    Submit
+                </button>
+            </span>
         </xpath>
     </template>
 

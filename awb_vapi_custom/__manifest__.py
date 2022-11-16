@@ -9,7 +9,7 @@
     'description': """
  """,
     'category': 'Customization',
-    'depends': ['base','hr_timesheet'],
+    'depends': ['base','hr_timesheet','timesheet_grid'],
     'data': [
         
     ],
