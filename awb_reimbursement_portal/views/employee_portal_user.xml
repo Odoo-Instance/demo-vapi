@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+<!-- Expenses menu page Design -->
+  <template id="portal_layout" name="Portal layout: expenses menu entry" inherit_id="portal.portal_breadcrumbs" priority="36">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'expenses' or expenses" t-attf-class="breadcrumb-item #{'active' if not expenses else ''}">
+                <t>Expenses</t>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_expenses" name="Show Expenses" customize_show="True"  inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Expenses</t>
+                <t t-set="url" t-value="'/my/expenses'"/>
+                <t t-set="placeholder_count" t-value="'expenses_count'"/>
+            </t>
+        </xpath>
+    </template>
+    
+ <!-- Expenses Table design -->
+ <template id="portal_my_expenses" name="My Expenses">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Expenses</t>
+            </t>
+           <div t-if="not expenses" class="alert alert-info">
+                There are currently no Data for your account.
+            </div>
+            <t t-if="expenses" t-call="portal.portal_table">
+            <span>
+   		 		<button type="button" id="add" name="add" class="btn btn-primary add expense_line_plus" style="float:right">Add</button>
+   		 	</span>
+            <div class="div_expenses_forms expense_lines_panel">
+            
+                <thead style="font-size: 0.8rem">
+                    <tr class="active">
+                   		 <th></th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Product</th>
+                        <th>Total</th>
+                        <th>Taxes</th>
+                        <th>Bill Reference</th>
+                        <th>Expense Date</th>
+                        <th>Account</th>
+                        <th>Analytic Account</th>
+                        <th>Analytic Tags</th>
+                        <th>Employees</th>
+                        <th>Paid by Employee</th>
+                       </tr>
+                 </thead>
+                  <tbody style="font-size: 0.8rem" class="expense_lines_ids">
+                  <t t-foreach="expenses" t-as="expense">
+                                <tr id="empty_lines" class="expense_tr">
+								<td><input type="checkbox" class="chekview"/></td>
+								<td class="status empty_line" name="status"><span t-field="expense.state"/></td>
+								<td class="description empty_line" name="description"><span t-field="expense.name"/></td>
+								<td class="product empty_line" name="product"><span t-field="expense.product_id.name"/></td>
+								<td class="total empty_line" name="total"><span t-field="expense.total_amount"/><span t-field="expense.currency_id"/></td>
+								<td class="taxes empty_line" name="taxes"><span t-field="expense.tax_ids"/></td>
+								<td class="bill_reference empty_line" name="bill_reference"><span t-field="expense.reference"/></td>
+								<td class="expense_Date empty_line" name="expense_date"><span t-field="expense.date"/></td>
+								<td class="account empty_line" name="account"><span t-field="expense.account_id"/></td>
+								<td class="analytic_account empty_line" name="analytic_account"><span t-field="expense.analytic_account_id"/></td>
+								<td class="analytic_tages empty_line" name="analytic_tages"><span t-field="expense.analytic_tag_ids"/></td>
+								<td class="employees empty_line" name="employees"><span t-field="expense.employee_id"/></td>
+								<td class="paid_of_employee empty_line" name="paid_of_employee"><span><t t-if="expense.payment_mode == 'own_account'">True</t><t t-else="">
+			                  			False
+			                  		</t></span></td>
+							</tr>
+							</t>
+							
+                 	 </tbody>
+                  </div>
+            	</t>
+          	</t>
+         </template>
+         
+   <!-- Expenses popup form design -->      
+    <template id="expense_line_popup" name="Expense Line Popup Creation">
+        <div role="dialog" id="expense_line_creation" class="modal expense_line_popup_form" tabindex="-1" t-ignore="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="max-width: 60%;">
+                <form action="/my/expenses" class="mb-2 required_form" method="post" id="expense_form" style="font-size: 0.8rem">
+                     <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="modal-content expenses_line_popup">
+                        <header class="modal-header">
+                            <h4 class="modal-title">Expenses</h4>
+                            <button type="button" id="expense_line_close" class="close expense_pop_close" data-dismiss="modal" aria-label="Close" style="margin-right: 30px;margin-top: 8px;padding: 0;">×</button>
+                        </header>
+                        <main class="modal-body">
+					        <div class="row">
+					        	<div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Status</label>
+                                    	<input type="text"  name="status"  id="status"  t-attf-class="form-control status" value="To Submit" readonly="True"/>
+                                   </div>
+                                   <div class="col-lg my-3 s_website_form_field">
+                                    	<label class="expense_pop_lable">Discription<span class="required_span"> *</span></label>
+                                    	<input type="text"  name="description"  id="description"  required="required" t-attf-class="form-control description s_website_form_input required" t-att-value="description"/>
+                                   </div>
+                                 </div>
+                                 <div class="row">
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Product<span class="required_span"> *</span></label>
+	                                  <select name="product" t-attf-class="form-control product required" id="product">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="product" t-as="pro">
+		                                		<option t-att-value="pro.id"><t t-esc="pro.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select>                                    </div>
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Total<span class="required_span"> *</span></label>
+                                    	<input type="number"  name="total"  id="total"  required="required" t-attf-class="form-control total required" t-att-value="total"/>
+                                   </div>
+                                   </div>
+                                   <div class="row">
+                                   		<div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Taxes</label>
+                                   		<select name="taxes" t-attf-class="form-control taxes" id="taxes">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="taxes" t-as="tax">
+		                                		<option t-att-value="tax.id"><t t-esc="tax.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select> 
+                                   </div>
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Bill Reference</label>
+                                    	<input type="text"  name="bill_reference"  id="bill_reference"  t-attf-class="form-control bill_reference" t-att-value="bill_reference"/>
+                                   </div>
+                                   </div>
+                                   <div class="row">
+                                   		<div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Expense Date<span class="required_span"> *</span></label>
+                                    	<input type="date"  name="expense_date"  id="expense_date"  t-attf-class="form-control expense_date required" t-att-value="expense_date"/>
+                                   </div>
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Account</label>
+                                	<select name="account" t-attf-class="form-control account" id="account">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="account" t-as="act">
+		                                		<option t-att-value="act.id"><t t-esc="act.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select> 
+                                   </div>
+                                   </div>
+                                    <div class="row">
+                                   		<div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Analytic Account</label>
+		                               <select name="analytic_account" t-attf-class="form-control analytic_account" id="analytic_account">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="analytic_account" t-as="analytic_act">
+		                                		<option t-att-value="analytic_act.id"><t t-esc="analytic_act.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select>   
+                                   </div>
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Analytic Tages</label>
+ 	                                	<select name="analytic_tages" t-attf-class="form-control analytic_tages" id="analytic_tages">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="analytic_tages" t-as="analytic_tag">
+		                                		<option t-att-value="analytic_tag.id"><t t-esc="analytic_tag.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select>   
+                                   </div>
+                                   </div>
+                                    <div class="row">
+                                   		<div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Employee<span class="required_span"> *</span></label>
+			                           <select name="employee" t-attf-class="form-control employee required" id="employee">
+		                                	<option value="">-Select-</option>
+		                                	<t t-foreach="employee" t-as="emp">
+		                                		<option t-att-value="emp.id"><t t-esc="emp.name"></t></option>
+		                                	</t>	                                	
+		                        	   </select>   
+                                   </div>
+                                   <div class="col-lg my-3">
+                                    	<label class="expense_pop_lable">Paid of Employee<span class="required_span"> *</span></label>
+                                    	<input type="checkbox"  name="paid_of_employee" t-attf-class="form-control paid_of_employee required" id="paid_of_employee"  style="height: 21px;width: 21px;margin-left: 23px"/>
+                                   </div>
+                                  </div>
+                          </main>
+                        <footer class="modal-footer">
+                        	<div class="col-md-12 col-sm-12 popup_footer_div">
+           		 				<button type="button" id="expense_line_save" name="save" class="btn btn-primary save_btn" style="margin-left:44%">Save</button>
+                        	</div>
+                        </footer>
+                        </div>
+                      </form>
+         			 </div>
+          			</div>
+          </template>
+ </data>
+</odoo>
