@@ -1,0 +1,21 @@
+.required_span
+{
+	color: red;
+}
+.waring
+{
+	border:1px solid red !important;
+}
+
+.reqError
+{
+	color: #ff0000; /*Red Color*/
+	font-weight: bold;
+}
+
+.required_style 
+{
+  border-style: solid;
+  border-width: 1px;
+  border-color: red !important;
+}
