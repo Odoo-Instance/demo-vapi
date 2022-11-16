@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from odoo import http
-from odoo.http import request
 from werkzeug.utils import redirect
+from odoo import fields, http, _
+from odoo.http import request
+
 
 class WebTimesheetRequest(http.Controller):
     @http.route('/create/timesheets/records',  methods=['POST'], type='json',
@@ -87,7 +88,7 @@ class WebTimesheetRequest(http.Controller):
             timesheet = request.env['account.analytic.line'].sudo().search([('id','=',int(rec))])
             if timesheet:
                 for obj in timesheet:
-                    obj.write({'validated':True, 'submitted': False, 'validated_status': 'validated'})
+                    obj.sudo().write({'validated':True, 'submitted': False, 'validated_status': 'validated'})
         return True
 
     @http.route('/reject/timesheets/records', methods=['POST'], type='json',
@@ -107,9 +108,9 @@ class WebTimesheetRequest(http.Controller):
                     else:
                         result = "false"
                         return False
-                return {
-                    'result':result
-                }
+        return {
+            'result': result
+        }
 
     @http.route('/delete/timesheets/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
@@ -133,20 +134,25 @@ class WebTimesheetRequest(http.Controller):
                 auth='user', website=True, csrf=False)
     def submit_record(self, **kw):
         timesheet_id = kw.get('checked')
+        print(timesheet_id)
         total_hours = 0
         result = ""
         for rec in timesheet_id:
             timesheet = request.env['account.analytic.line'].sudo().search(
                 [('id', '=', int(rec))])
+            print(timesheet)
             if timesheet.validated_status == "draft":
                 total_hours += int(timesheet.unit_amount)
+                print(total_hours)
 
         if total_hours >= 40:
             for obj in timesheet_id:
                 timesheet = request.env['account.analytic.line'].sudo().search(
                     [('id', '=', int(obj))])
+                print(timesheet)
                 timesheet.write(
                     {'submitted': True, 'validated_status': 'approval_waiting'})
+                print('timesheet')
             result = "true"
 
         else:

@@ -147,16 +147,13 @@
                                         </td>
                                         <td style="width:250px">
                                             <select class="form-control o_website_form_input"
-                                                    id="activitytype"
-                                                    name="activitytype">
+                                                    id="activitytype" name="activitytype">
                                                 <option></option>
                                                 <option>billable_time</option>
                                                 <option>billable_fixed</option>
                                                 <option>non_billable</option>
-                                                <option>timesheet_revenues
-                                                </option>
-                                                <option>service_revenues
-                                                </option>
+                                                <option>timesheet_revenues</option>
+                                                <option>service_revenues</option>
                                                 <option>other_revenues</option>
                                                 <option>other_costs</option>
                                             </select>
@@ -170,10 +167,9 @@
                                         </td>
 
                                         <td style="width:250px">
-                                            <input style="width:250px"
-                                                   type="text" id="date_start"
+                                            <input style="width:250px" type="text" id="date_start"
                                                    name="date" required=""
-                                            />
+                                                 />
                                         </td>
                                     </tr>
                                     <tr>
@@ -202,22 +198,22 @@
 
                                         </td>
                                     </tr>
-                                    <!--                                    <tr>-->
-                                    <!--                                        <td style="width:250px">-->
-                                    <!--                                            <label style="white-space: nowrap; "-->
-                                    <!--                                                   class="col-md-3 col-sm-4 control-label date_to"-->
-                                    <!--                                                   for="to">Approval Status-->
-                                    <!--                                            </label>-->
-                                    <!--                                        </td>-->
-                                    <!--                                        <td style="width:250px">-->
-                                    <!--                                            <select class="form-control o_website_form_input"-->
-                                    <!--                                                    id="status" name="status">-->
-                                    <!--                                                <option></option>-->
-                                    <!--                                                <option>draft</option>-->
-                                    <!--                                                <option>validated</option>-->
-                                    <!--                                            </select>-->
-                                    <!--                                        </td>-->
-                                    <!--                                    </tr>-->
+<!--                                    <tr>-->
+<!--                                        <td style="width:250px">-->
+<!--                                            <label style="white-space: nowrap; "-->
+<!--                                                   class="col-md-3 col-sm-4 control-label date_to"-->
+<!--                                                   for="to">Approval Status-->
+<!--                                            </label>-->
+<!--                                        </td>-->
+<!--                                        <td style="width:250px">-->
+<!--                                            <select class="form-control o_website_form_input"-->
+<!--                                                    id="status" name="status">-->
+<!--                                                <option></option>-->
+<!--                                                <option>draft</option>-->
+<!--                                                <option>validated</option>-->
+<!--                                            </select>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
                                     <tr>
                                         <td style="width:250px">
                                             <label class="col-md-3 col-sm-4 control-label date_to"
@@ -226,13 +222,12 @@
                                         </td>
                                         <td style="width:250px">
                                             <select class="form-control o_website_form_input"
-                                                    id="platform"
-                                                    name="platform">
+                                                    id="platform" name="platform">
                                                 <option></option>
                                                 <option>Outsystem</option>
                                                 <option>Appia</option>
                                                 <option>UI/UX</option>
-                                                <option>Not Applicable</option>
+                                                <option>Not_Applicable</option>
                                             </select>
                                         </td>
                                     </tr>
@@ -321,21 +316,22 @@
 
     <template id="timesheet_checkbox" name="timesheet_checkbox"
               inherit_id="hr_timesheet.portal_my_timesheets">
+
         <xpath expr="//thead/tr/th" position="before">
             <th></th>
         </xpath>
         <xpath expr="//thead/tr[3]" position="inside">
             <th>
-                <span>Project Type</span>
+                Project Type
             </th>
             <th>
-                <span>Activity Type</span>
+                Activity Type
             </th>
             <th>
-                <span>Platform</span>
+                Platform
             </th>
             <th>
-                <span>Status</span>
+                Status
             </th>
         </xpath>
         <xpath expr="//tbody/t/tr/td" position="before">
@@ -370,7 +366,7 @@
         </xpath>
 
         <xpath expr="//t/t[4]/t" position="inside">
-            <span class="button_class" style="margin-right:78.5%;">
+            <span class="button_class" style="margin-right:78.5%;display:none">
                 <button class="approve"
 
 
@@ -390,7 +386,7 @@
             </span>
         </xpath>
         <xpath expr="//t/t[4]/t" position="inside">
-            <span class="edit_button_class" style="margin-right:78.5%;">
+            <span class="edit_button_class" style="margin-right:78.5%;display:none;">
 
                 <a role="button"
                    class="btn btn-secondary flex-grow-1 mb-1 createButton"
@@ -408,7 +404,7 @@
                 >
                     Delete
                 </button>
-                <button class="submit"
+                 <button class="submit"
 
 
                         id="submit"
@@ -419,4 +415,5 @@
             </span>
         </xpath>
     </template>
+
 </odoo>
