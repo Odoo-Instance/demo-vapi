@@ -63,7 +63,7 @@ class ExpensesCustomerPortal(CustomerPortal):
             'searchbar_sortings': searchbar_sortings,
             'sortby': sortby,
         })
-        return request.render("awb_employee_portal_user.portal_my_expenses", values)
+        return request.render("awb_reimbursement_portal.portal_my_expenses", values)
     
     
     @http.route(['/expense_lines/creation'], type='json', auth="public",
@@ -87,7 +87,7 @@ class ExpensesCustomerPortal(CustomerPortal):
                   'paid_of_employee': kw.get('paid_of_employee'),
                 }
 
-        return request.env['ir.ui.view']._render_template("awb_employee_portal_user.expense_line_popup",
+        return request.env['ir.ui.view']._render_template("awb_reimbursement_portal.expense_line_popup",
                                                          values)
     @http.route(['/new/row/expense_lines'], type='json', auth="public",
                 methods=['POST'], website=True)

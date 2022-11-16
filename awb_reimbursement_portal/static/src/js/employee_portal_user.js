@@ -1,4 +1,4 @@
-odoo.define('awb_employee_portal_user.employee_portal_user', function (require) {
+odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) {
 	var ajax = require('web.ajax');
 	var core = require('web.core');
 	var Widget = require('web.Widget');
