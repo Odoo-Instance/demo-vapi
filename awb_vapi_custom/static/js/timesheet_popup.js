@@ -7,7 +7,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require){
     var publicWidget = require('web.public.widget');
     console.log('start');
     $(document).ready(function() {
-
 $('#mydiv').on('click','.my_div',function(){
 console.log('sucess')
 ajax.jsonRpc("/create/timesheets/records", 'call',{
@@ -94,6 +93,7 @@ console.log('sucess')
 var checkboxes = document.getElementsByName('check');
 var checkboxesChecked = [];
   for (var i=0; i<checkboxes.length; i++) {
+
      if (checkboxes[i].checked) {
         checkboxesChecked.push(checkboxes[i].id);
      }
