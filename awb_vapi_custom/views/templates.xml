@@ -24,7 +24,7 @@
                     <div id="warrantypopup" class="modal fade"
                          style="heght:50%">
                         <div class="modal-dialog modal-content"
-                             style="border:solid 2px white; height:700px;width:500px;margin-top:50px">
+                             style="border:solid 2px white; height:700px;width:700px;margin-top:50px">
                             <div class="modal-body" id="pop_html">
                                 <a href="#"
                                    class="o_popup_btn_close o_not_editable o_default_snippet_text pull-right"
@@ -38,7 +38,7 @@
                                     </h2>
                                 </div>
                                 <br/>
-                                <table border="1" style="margin:auto;">
+                                <table style="margin:auto;">
                                     <tr>
                                         <td style="width:250px">
                                             <label class="col-md-3 col-sm-4 control-label date_to"
@@ -232,9 +232,9 @@
                                         </td>
                                     </tr>
                                 </table>
-                                <div style="padding-top:20px"
+                                <div style="padding-top:30px"
                                      class="form-group row form-field">
-                                    <div style="padding:0 45% 0 45%">
+                                    <div style="margin:auto;">
                                         <button type="submit"
                                                 id="warranty_submit"
                                                 class="btn btn-primary btn-md o_website_form_send">
@@ -316,7 +316,6 @@
 
     <template id="timesheet_checkbox" name="timesheet_checkbox"
               inherit_id="hr_timesheet.portal_my_timesheets">
-
         <xpath expr="//thead/tr/th" position="before">
             <th></th>
         </xpath>

@@ -7,6 +7,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require){
     var publicWidget = require('web.public.widget');
     console.log('start');
     $(document).ready(function() {
+$("table tr.thead-light th:nth-child(2)").attr('colspan',6);
 $('#mydiv').on('click','.my_div',function(){
 console.log('sucess')
 ajax.jsonRpc("/create/timesheets/records", 'call',{
