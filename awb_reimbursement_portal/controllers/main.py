@@ -22,7 +22,7 @@ class ExpensesCustomerPortal(CustomerPortal):
     @http.route(['/my/expenses', '/my/expenses/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_expenses(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
         values = self._prepare_portal_layout_values()
-        hr_expenses = request.env['hr.expense']
+        hr_expenses = request.env['hr.expense'].sudo().search([('state', '=','draft')])
         domain = []
 
         searchbar_sortings = {
@@ -36,7 +36,6 @@ class ExpensesCustomerPortal(CustomerPortal):
             sortby = 'date'
         sort_order = searchbar_sortings[sortby]['order']
 
-        #archive_groups = self._get_archive_groups('hr.expense', domain)
         if date_begin and date_end:
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
 
@@ -53,12 +52,13 @@ class ExpensesCustomerPortal(CustomerPortal):
         # search the count to display, according to the pager data
         expenses = hr_expenses.search(domain, order=sort_order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_expenses_history'] = expenses.ids[:100]
+        state_expense = request.env['hr.expense'].sudo().search([('state', '=','reported')])
         values.update({
             'date': date_begin,
-            'expenses': expenses,
+            'expenses': hr_expenses,
+            'state_expenses': state_expense,
             'page_name': 'submit',
             'pager': pager,
-            #'archive_groups': archive_groups,
             'default_url': '/my/expenses',
             'searchbar_sortings': searchbar_sortings,
             'sortby': sortby,
@@ -108,3 +108,16 @@ class ExpensesCustomerPortal(CustomerPortal):
             })
         return values
         
+    @http.route('/submit/expenses', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
+    def submit_expesnses(self, **kw):
+        """ Render the submit line row template """
+        expense_id = kw.get('checked')
+        for rec in expense_id:
+            if rec:
+                expense = request.env['hr.expense'].sudo().search(
+                    [('id', '=', int(rec))])
+            values = expense.update({
+                'state' : 'reported'
+                })
+        return values

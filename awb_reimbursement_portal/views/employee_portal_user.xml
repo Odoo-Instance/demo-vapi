@@ -28,15 +28,15 @@
             <t t-call="portal.portal_searchbar">
                 <t t-set="title">Expenses</t>
             </t>
+            <span style="float:right">
+   		 		<button type="button" id="add" name="add" class="btn btn-primary add expense_line_plus">Add</button>
+   		 	</span>
            <div t-if="not expenses" class="alert alert-info">
                 There are currently no Data for your account.
             </div>
-            <t t-if="expenses" t-call="portal.portal_table">
-            <span>
-   		 		<button type="button" id="add" name="add" class="btn btn-primary add expense_line_plus" style="float:right">Add</button>
-   		 	</span>
             <div class="div_expenses_forms expense_lines_panel">
-            
+            <!-- To submit table action -->
+            <t t-if="expenses" t-call="portal.portal_table">
                 <thead style="font-size: 0.8rem">
                     <tr class="active">
                    		 <th></th>
@@ -57,8 +57,60 @@
                   <tbody style="font-size: 0.8rem" class="expense_lines_ids">
                   <t t-foreach="expenses" t-as="expense">
                                 <tr id="empty_lines" class="expense_tr">
-								<td><input type="checkbox" class="chekview"/></td>
-								<td class="status empty_line" name="status"><span t-field="expense.state"/></td>
+                                <td>
+	                               	<span class="checkbox" t-att-id="expense.id">
+			                       		 <input t-att-id="expense.id" t-att-title="expense.state" name="check" type="checkbox"/>
+			                    	</span>
+                                </td>
+								<td t-attf-class="status empty_line" name="status"><span t-field="expense.state"/></td>
+								<td t-attf-class="description empty_line" name="description"><span t-field="expense.name"/></td>
+								<td t-attf-class="product empty_line" name="product"><span t-field="expense.product_id.name"/></td>
+								<td t-attf-class="total empty_line" name="total"><span t-field="expense.total_amount"/><span t-field="expense.currency_id"/></td>
+								<td t-attf-class="taxes empty_line" name="taxes"><span t-field="expense.tax_ids"/></td>
+								<td t-attf-class="bill_reference empty_line" name="bill_reference"><span t-field="expense.reference"/></td>
+								<td t-attf-class="expense_Date empty_line" name="expense_date"><span t-field="expense.date"/></td>
+								<td t-attf-class="account empty_line" name="account"><span t-field="expense.account_id"/></td>
+								<td t-attf-class="analytic_account empty_line" name="analytic_account"><span t-field="expense.analytic_account_id"/></td>
+								<td t-attf-class="analytic_tages empty_line" name="analytic_tages"><span t-field="expense.analytic_tag_ids"/></td>
+								<td t-attf-class="employees empty_line" name="employees"><span t-field="expense.employee_id"/></td>
+								<td t-attf-class="paid_of_employee empty_line" name="paid_of_employee"><span><t t-if="expense.payment_mode == 'own_account'">True</t><t t-else="">
+			                  			False
+			                  		</t></span></td>
+							</tr>
+							</t>
+                 	 </tbody>
+            	</t>
+            	 <span style="float:right">
+   		 		<button type="button" style="display:none" id="submit" name="submit" class="btn btn-primary submit expense_line_submit">Submit</button>
+   		 		</span>
+   		 		<div style="margin-top:4%">
+   		 		<!-- Submitted table action -->
+            	 <t t-call="portal.portal_table">
+                 	<thead style="font-size: 0.8rem">
+                    <tr class="active">
+                   		 <th></th>
+                        <th>Status</th>
+                        <th>Description</th>
+                        <th>Product</th>
+                        <th>Total</th>
+                        <th>Taxes</th>
+                        <th>Bill Reference</th>
+                        <th>Expense Date</th>
+                        <th>Account</th>
+                        <th>Analytic Account</th>
+                        <th>Analytic Tags</th>
+                        <th>Employees</th>
+                        <th>Paid by Employee</th>
+                       </tr>
+                 </thead>
+                 <tbody style="font-size: 0.8rem" class="expense_lines_ids">
+                  <t t-foreach="state_expenses" t-as="expense">
+                                <tr id="empty_lines" class="expense_trs">
+								<td>
+	                               	<span class="submit_checkbox" t-att-id="expense.id">
+			                       		 <input t-att-id="expense.id" t-att-title="expense.state" name="check" type="checkbox"/>
+			                    	</span>
+                                </td>								<td class="status empty_line" name="status"><span t-field="expense.state"/></td>
 								<td class="description empty_line" name="description"><span t-field="expense.name"/></td>
 								<td class="product empty_line" name="product"><span t-field="expense.product_id.name"/></td>
 								<td class="total empty_line" name="total"><span t-field="expense.total_amount"/><span t-field="expense.currency_id"/></td>
@@ -74,10 +126,10 @@
 			                  		</t></span></td>
 							</tr>
 							</t>
-							
                  	 </tbody>
-                  </div>
-            	</t>
+                 	 </t>
+                 	 </div>
+            	</div>
           	</t>
          </template>
          
@@ -96,7 +148,7 @@
 					        <div class="row">
 					        	<div class="col-lg my-3">
                                     	<label class="expense_pop_lable">Status</label>
-                                    	<input type="text"  name="status"  id="status"  t-attf-class="form-control status" value="To Submit" readonly="True"/>
+                                    	<input type="text" name="status" id="status"  t-attf-class="form-control status" value="To Submit" readonly="True"/>
                                    </div>
                                    <div class="col-lg my-3 s_website_form_field">
                                     	<label class="expense_pop_lable">Discription<span class="required_span"> *</span></label>
