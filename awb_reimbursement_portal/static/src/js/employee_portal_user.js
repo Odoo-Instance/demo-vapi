@@ -7,7 +7,8 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 /*Declare click and onchange action method*/
 	var ExpensesDetailsForm = Widget.extend({
 		events: {
-
+			'click .expense_line_submit': '_onSubmit_line',
+			'click .checkbox': '_onClickCheckbox',
 	    },
 	    start: function () {
 	        var self = this;
@@ -72,15 +73,14 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 					    	});
 							
 								ajax.jsonRpc('/new/row/expense_lines', 'call', post).then(function (modal) { 
+									window.location.reload();
 				  		    	});
 							
 				  		    	$modal.empty();
 				  				$modal.modal('hide');
 				  				$('.expense_line_popup_form').remove();
 						});
-						$modal.on('click', '#submit', function(ev){
-							alert()
-						});
+						
 						//close action
 			   		    $modal.on('click', '#expense_line_close', function(ev){
 			   		    	$modal.empty();
@@ -89,6 +89,26 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 			   		    });
 					});
 	    },
+	    /*** Submit button action  ***/
+	    _onSubmit_line:function(ev){
+	    	var checkboxes = document.getElementsByName('check');
+	    	var checkboxesChecked = [];
+	    	  for (var i=0; i<checkboxes.length; i++) {
+	    	     if (checkboxes[i].checked) {
+	    	        checkboxesChecked.push(checkboxes[i].id);
+	    	     }
+	    	  }
+	    	  console.log(checkboxesChecked)
+	    	 ajax.jsonRpc("/submit/expenses", 'call',{'checked':checkboxesChecked}).then(function(modal){
+	    		 window.location.reload();
+	    		  });
+	    },
+	    /*** Checkbox click action  ***/
+	    _onClickCheckbox:function(){
+	    	var button = document.getElementById("submit");
+	    	  button.style.display = "block";
+	    }
+	    
 	});
 
 	publicWidget.registry.ExpensesDetailsForm = publicWidget.Widget.extend({
