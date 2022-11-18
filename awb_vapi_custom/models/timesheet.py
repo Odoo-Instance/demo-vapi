@@ -41,9 +41,4 @@ class hr_timesheet(models.Model):
             return expression.AND([domain, [('employee_id', '=', employee.id)]])
 
         else:
-            # print('part')
-            # partner_domain = expression.AND([domain, [('project_id.partner_id', '=',self.env.user.partner_id.id)]])
-            # state_domain = expression.AND([domain, [
-            #     ('validated_status', '!=', 'draft')]])
-
-            return expression.AND([domain, [('project_id.partner_id', '=',self.env.user.partner_id.id),('validated_status', '!=',["draft"])]])
+            return expression.AND([domain, [('project_id.user_id', '=',self.env.user.id),('validated_status', '!=',["draft"])]])

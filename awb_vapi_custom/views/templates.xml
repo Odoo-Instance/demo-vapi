@@ -310,6 +310,44 @@
                         </div>
                     </div>
                 </form>
+                <form action="/update/request" method="post"
+                      id="formtime" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token"
+                    />
+                    <div id="rejectpopup" class="modal fade"
+                         style="heght:50%">
+                        <div class="modal-dialog modal-content"
+                             style="border:solid 2px white; height:250px;width:500px;margin-top:50px">
+                            <div class="modal-body" id="pop_html">
+                                <a href="#"
+                                   class="o_popup_btn_close o_not_editable o_default_snippet_text pull-right"
+                                   data-dismiss="modal" style="font-size:30px">×
+                                </a>
+                                <input type="text" id="reject_timesheet_id"
+                                       class="form-control o_website_form_input"
+                                       name="timesheet" style="display:none;"/>
+                                <label class="col-md-3 col-sm-4 control-label"
+                                       style="white-space: nowrap;" for="name">Reject Reason
+                                </label>
+                                <div class="col-12">
+                                    <input type="text" id="name"
+                                           class="form-control o_website_form_input"
+                                           name="name"/>
+                                </div>
+                            </div>
+                            <div style="padding-top:20px"
+                                 class="form-group row form-field">
+                                <div style="padding:0 45% 0 45%">
+                                    <button type="submit"
+                                            id="edit_submit"
+                                            class="btn btn-primary btn-md o_website_form_send">
+                                        Update
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </t>
         </xpath>
     </template>
@@ -319,6 +357,22 @@
         <xpath expr="//thead/tr/th" position="before">
             <th></th>
         </xpath>
+<!--         <xpath expr="//thead/tr" position="inside">-->
+<!--            <th id="reject_button1" style="display:none"></th>-->
+<!--        </xpath>-->
+<!--            <head>-->
+<!--                <script>-->
+<!--                    $(th).attr('colspan',6);-->
+<!--                </script>-->
+<!--            </head>-->
+<!--       <xpath expr="//thead/tr[contains(@t-attf-class, 'thead-light')]" position="inside">-->
+<!--           <script>-->
+
+<!--               var cell = document.querySelectorAll('table tr.thead-light th:nth-child(2)');-->
+<!--               cell.attr('colspan',6);-->
+<!--               console.log('th',cell)-->
+<!--           </script>-->
+<!--       </xpath>-->
         <xpath expr="//thead/tr[3]" position="inside">
             <th>
                 Project Type
@@ -361,6 +415,16 @@
             <td>
                 <span t-esc="timesheet.validated_status"
                       t-att-title="timesheet.id"/>
+            </td>
+            <td id='reject_button2'  class="reject_button2"
+                t-att-title="timesheet.id" style="display:none;">
+                <a role="button"
+                   class="btn btn-secondary flex-grow-1 mb-1 rejectButton"
+                   data-toggle="modal"
+                   t-att-id="timesheet.id" data-target='#rejectpopup' href="#"
+                >
+                    <t>Reject</t>
+                </a>
             </td>
         </xpath>
 
@@ -414,5 +478,4 @@
             </span>
         </xpath>
     </template>
-
 </odoo>
