@@ -7,7 +7,22 @@ odoo.define('awb_hr_timesheet.timesheet', function(require){
     var publicWidget = require('web.public.widget');
     console.log('start');
     $(document).ready(function() {
-$("table tr.thead-light th:nth-child(2)").attr('colspan',6);
+$("table tr.thead-light th:nth-child(2)").attr('colspan',8);
+ajax.jsonRpc("/usecheck/records", 'call',{}).then(function(result){
+       if (result['employee'] != "true"){
+       var x = document.querySelectorAll("#reject_button2")
+       for (let i = 0; i < x.length; i++) {
+       x[i].style.display = "block";
+       }
+
+        document.getElementById("reject_button1").style.display = "block";
+//        document.getElementById("reject_button2").style.display = "none";
+
+       }
+
+
+
+       });
 $('#mydiv').on('click','.my_div',function(){
 console.log('sucess')
 ajax.jsonRpc("/create/timesheets/records", 'call',{
@@ -79,6 +94,7 @@ $(document).ready(function() {
        }
        else{
        $submit.toggle( $cbs.is(":checked") );
+
        }
 
 
@@ -203,4 +219,10 @@ window.location.reload();
   });
 });
 
+$(".rejectButton").click(function() {
+var $item = $(this).closest("tr")   // Finds the closest row <tr>
+                       .find(".reject_button2");
+                       document.getElementById("reject_timesheet_id").value = $item[0].title;
+
+});
 });
