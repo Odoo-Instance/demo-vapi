@@ -196,6 +196,24 @@ class WebTimesheetRequest(http.Controller):
         }
         return res
 
+    @http.route('/update/request', method='post', type='http',
+                auth='public',
+                website=True, csrf=False)
+    def update_reject_record(self, **post):
+        id = int(post['timesheet'])
+        values = {
+
+
+            'name': post['name'],
+            'validated_status':'rejected',
+            'submitted':False
+        }
+        req = request.env['account.analytic.line'].sudo().search(
+            [('id', '=', id)])
+        if req.validated_status != 'validated':
+            req.update(values)
+        return redirect('/my/home')
+
 
 
 
