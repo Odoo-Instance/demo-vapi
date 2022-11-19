@@ -73,7 +73,7 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 					    	});
 							
 								ajax.jsonRpc('/new/row/expense_lines', 'call', post).then(function (modal) { 
-									window.location.reload();
+									$('.expense_lines_ids tr#empty_lines').before(modal);
 				  		    	});
 							
 				  		    	$modal.empty();
@@ -98,9 +98,16 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 	    	        checkboxesChecked.push(checkboxes[i].id);
 	    	     }
 	    	  }
-	    	  console.log(checkboxesChecked)
+	    	  /* Cache the table. */
+	    	  const table =  document.getElementById("delete_row");
+	    	  
+	    	  for (const [index, row] of [...table.rows].entries()) {
+				    if (row.querySelector('input:checked')) {
+				      table.deleteRow(index);
+				    }
+				  }
 	    	 ajax.jsonRpc("/submit/expenses", 'call',{'checked':checkboxesChecked}).then(function(modal){
-	    		 window.location.reload();
+	    		 $('.submit_lines_ids tr#empty_lines').before(modal);
 	    		  });
 	    },
 	    /*** Checkbox click action  ***/
