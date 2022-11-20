@@ -43,7 +43,6 @@ class WebTimesheetRequest(http.Controller):
             }
         return res
 
-
     @http.route('/timesheet/request/submit', method='post', type='http', auth='public',
                 website=True, csrf=False)
     def send_request(self, **post):
