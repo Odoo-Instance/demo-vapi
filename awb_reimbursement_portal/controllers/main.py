@@ -93,7 +93,8 @@ class ExpensesCustomerPortal(CustomerPortal):
                 methods=['POST'], website=True)
     def new_row_expenselines(self, **kw):
         """ Render the new expense line row template """
-        values = request.env['hr.expense'].create({
+        
+        expenses_id = request.env['hr.expense'].create({
             'name':kw.get('description'),
             'product_id':int(kw.get('product')),
             'total_amount': kw.get('total'),
@@ -104,9 +105,15 @@ class ExpensesCustomerPortal(CustomerPortal):
              'analytic_account_id': int(kw.get('analytic_account')) if kw.get('analytic_account') else False,
              #'analytic_tag_ids': anylytic_tag.id,
              'employee_id': int(kw.get('employee')) if kw.get('employee') else False, 
-             'unit_amount':0.0
+             'unit_amount':0.0,
             })
-        return values
+        
+        values = {
+            'expense':expenses_id,
+            'paid_by_emp':'True'
+            }
+        return request.env['ir.ui.view']._render_template(
+            "awb_reimbursement_portal.new_expense_lines_row", values)
         
     @http.route('/submit/expenses', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
@@ -117,7 +124,12 @@ class ExpensesCustomerPortal(CustomerPortal):
             if rec:
                 expense = request.env['hr.expense'].sudo().search(
                     [('id', '=', int(rec))])
-            values = expense.update({
+                expense.update({
                 'state' : 'reported'
                 })
-        return values
+            values = {
+            'expense':expense,
+            'paid_by_emp':'True'
+            }
+        return request.env['ir.ui.view']._render_template(
+            "awb_reimbursement_portal.submitted_expense_lines_row", values)
