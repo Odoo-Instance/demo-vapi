@@ -475,6 +475,7 @@
                 >
                     Submit
                 </button>
+                <div> Hours: <span id="selected_hours" t-options='{"widget": "float_time"}'/></div>
             </span>
         </xpath>
     </template>
