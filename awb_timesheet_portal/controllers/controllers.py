@@ -211,7 +211,7 @@ class WebTimesheetRequest(http.Controller):
             [('id', '=', id)])
         if req.validated_status != 'validated':
             req.update(values)
-        return redirect('/my/home')
+        return redirect('/my/timesheets')
 
 
 
