@@ -423,7 +423,7 @@
                    data-toggle="modal"
                    t-att-id="timesheet.id" data-target='#rejectpopup' href="#"
                 >
-                    <t>Reject</t>
+                    <t>Edit</t>
                 </a>
             </td>
         </xpath>
