@@ -2,7 +2,7 @@
 from werkzeug.utils import redirect
 from odoo import fields, http, _
 from odoo.http import request
-
+from odoo.exceptions import UserError,ValidationError
 
 class WebTimesheetRequest(http.Controller):
     @http.route('/create/timesheets/records',  methods=['POST'], type='json',
@@ -43,6 +43,7 @@ class WebTimesheetRequest(http.Controller):
             }
         return res
 
+
     @http.route('/timesheet/request/submit', method='post', type='http', auth='public',
                 website=True, csrf=False)
     def send_request(self, **post):
@@ -59,9 +60,14 @@ class WebTimesheetRequest(http.Controller):
             'project_type':post['activity']
 
         }
-        req = request.env['account.analytic.line'].sudo().create(values)
-        print(req.validated_status)
-        return redirect('/my/timesheets')
+        employee = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)])
+        timesheet = request.env['account.analytic.line'].sudo().search(
+            [('date', '=', post['date']), ('employee_id', '=', employee.id),
+             ('validated_status', '!=', 'rejected')])
+        if not timesheet:
+            req = request.env['account.analytic.line'].sudo().create(values)
+            return redirect('/my/timesheets')
 
     @http.route('/edit/request', method='post', type='http',
                 auth='public',
@@ -211,8 +217,58 @@ class WebTimesheetRequest(http.Controller):
             [('id', '=', id)])
         if req.validated_status != 'validated':
             req.update(values)
-        return redirect('/my/home')
+        return redirect('/my/timesheets')
 
+    @http.route('/check/date/records', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
+    def edit_record(self, **kw):
+        timesheet_result = ""
+        employee = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)])
+        timesheet_date = kw.get('date')
+        timesheet = request.env['account.analytic.line'].sudo().search(
+            [('date', '=', timesheet_date),('employee_id','=',employee.id),
+             ('validated_status','!=','rejected')])
+        print(timesheet)
+        if timesheet:
+            timesheet_result = "true"
+        else:
+            timesheet_result = "false"
+        res = {
+            'timesheet': timesheet_result
+
+        }
+        return res
+
+
+        # timesheet = request.env['account.analytic.line']
+        # pdf_timesheet = timesheet.create_pdf()
+        # pdf = r.sudo().render_qweb_pdf([int(id)])
+        #
+        # return request.make_response(pdf_timesheet[)
+
+# class MyCustomerPortal(CustomerPortal):
+#
+#     def _prepare_home_portal_values(self, counters):
+#         print('kkkkkkkkkkkkkkkkkkkkkkkk')
+#         employee = request.env['hr.employee'].sudo().search(
+#             [('user_id', '=', request.env.user.id)])
+#         values = super()._prepare_home_portal_values(counters)
+#         if 'timesheet_count' in counters:
+#             Timesheet = request.env['account.analytic.line'].sudo().search([('employee_id','=',employee.id)])
+#             domain = Timesheet._timesheet_get_portal_domain()
+#             values['timesheet_count'] = Timesheet.sudo().search_count(domain)
+#             print(values['timesheet_count'])
+#         return values
+
+# class MyTimesheetCustomerPortal(TimesheetCustomerPortal):
+#
+#     @http.route(['/my/timesheets', '/my/timesheets/page/<int:page>'],
+#                 type='http', auth="user", website=True)
+#     def portal_my_timesheets(self, page=1, sortby=None, filterby=None,
+#                              search=None, search_in='all', groupby='none',
+#                              **kw):
+#         print('lllllllllllllllllllllllllllllllllllllllll')
 
 
 
