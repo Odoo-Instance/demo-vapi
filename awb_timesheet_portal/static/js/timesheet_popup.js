@@ -225,4 +225,26 @@ var $item = $(this).closest("tr")   // Finds the closest row <tr>
                        document.getElementById("reject_timesheet_id").value = $item[0].title;
 
 });
+
+$("#warranty_submit").click(function(e) {
+let x = document.forms["formtime"]["hours"].value;
+let y = document.forms["formtime"]["date"].value;
+
+                console.log('ccccc',x)
+                if (x > 24) {
+                alert("Not allowed to enter more than 24 hours");
+                return false;
+                }
+
+ajax.jsonRpc("/check/date/records", 'call',{'date':y}).then(function(result){
+
+if (result['timesheet'] === "true"){
+
+alert("Duplicate Record Exist");
+
+
+ }
+
+  });
+});
 });
