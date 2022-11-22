@@ -5,6 +5,10 @@ odoo.define('awb_hr_timesheet.timesheet', function(require){
     var ajax = require('web.ajax');
     var Widget = require('web.Widget');
     var publicWidget = require('web.public.widget');
+    var core = require('web.core');
+    var QWeb = core.qweb;
+    var rpc = require('web.rpc');
+    var _t = core._t;
     console.log('start');
     $(document).ready(function() {
 $("table tr.thead-light th:nth-child(2)").attr('colspan',8);
@@ -104,6 +108,32 @@ $(document).ready(function() {
         });
 
 });
+$(".checkbox").click(function() {
+console.log('pppppppppppppppp')
+var total = 0
+console.log(total)
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        var $item = $(this).closest("tr")
+        console.log('chekc',$item[0].cells[7].textContent)
+        total = parseInt(total) + parseInt($item[0].cells[7].textContent)
+
+        document.getElementById("selected_hours").innerHTML = total
+
+     }
+
+  }
+
+
+
+
+  });
+
+
+
+
 
 $('.button_class').on('click','.approve',function(){
 console.log('sucess')
@@ -226,6 +256,15 @@ var $item = $(this).closest("tr")   // Finds the closest row <tr>
 
 });
 
+function validateFormcreate(){
+                let x = document.forms["formtime"]["hours"].value;
+                console.log('ccccc',x)
+                if (x > 24) {
+                alert("Not allowed to enter more than 24 hours");
+                return false;
+                }
+
+                }
 $("#warranty_submit").click(function(e) {
 let x = document.forms["formtime"]["hours"].value;
 let y = document.forms["formtime"]["date"].value;
