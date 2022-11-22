@@ -286,4 +286,19 @@ alert("Duplicate Record Exist");
 
   });
 });
+$(".checkbox").click(function() {
+
+var total = 0
+var checkboxes = document.getElementsByName('check');
+var checkboxesChecked = [];
+  for (var i=0; i<checkboxes.length; i++) {
+     if (checkboxes[i].checked) {
+        var $item = $(this).closest("tr")
+        total = parseInt(total) + parseInt($item[0].cells[6].textContent)
+        document.getElementById("selected_hours").innerHTML = total
+     }
+
+  }
+
+  });
 });
