@@ -3,6 +3,17 @@
     <template id="timesheet_button_layout" name="timesheet_button_entry"
               inherit_id="portal.portal_breadcrumbs" priority="36">
         <xpath expr="//ol[hasclass('o_portal_submenu')]" position="after">
+            <!--            <script>-->
+            <!--                function validateFormcreate(){-->
+            <!--                let x = document.forms["formtime"]["hours"].value;-->
+            <!--                console.log('ccccc',x)-->
+            <!--                if (x > 24) {-->
+            <!--                alert("Not allowed to enter more than 24 hours");-->
+            <!--                return false;-->
+            <!--                }-->
+
+            <!--                }-->
+            <!--            </script>-->
             <t t-if="page_name == 'timesheet' or timesheet"
                t-attf-class="breadcrumb-item #{'active' if not timesheet else ''}">
                 <div class="o_download_pdf btn-toolbar flex-sm-nowrap"
@@ -17,7 +28,8 @@
                         </a>
                     </div>
                 </div>
-                <form action="/timesheet/request/submit" method="post"
+                <form action="/timesheet/request/submit"
+                      method="post"
                       id="formtime" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token"
                            t-att-value="request.csrf_token()"/>
@@ -147,13 +159,16 @@
                                         </td>
                                         <td style="width:250px">
                                             <select class="form-control o_website_form_input"
-                                                    id="activitytype" name="activitytype">
+                                                    id="activitytype"
+                                                    name="activitytype">
                                                 <option></option>
                                                 <option>billable_time</option>
                                                 <option>billable_fixed</option>
                                                 <option>non_billable</option>
-                                                <option>timesheet_revenues</option>
-                                                <option>service_revenues</option>
+                                                <option>timesheet_revenues
+                                                </option>
+                                                <option>service_revenues
+                                                </option>
                                                 <option>other_revenues</option>
                                                 <option>other_costs</option>
                                             </select>
@@ -167,9 +182,10 @@
                                         </td>
 
                                         <td style="width:250px">
-                                            <input style="width:250px" type="text" id="date_start"
+                                            <input style="width:250px"
+                                                   type="text" id="date_start"
                                                    name="date" required=""
-                                                 />
+                                            />
                                         </td>
                                     </tr>
                                     <tr>
@@ -198,22 +214,22 @@
 
                                         </td>
                                     </tr>
-<!--                                    <tr>-->
-<!--                                        <td style="width:250px">-->
-<!--                                            <label style="white-space: nowrap; "-->
-<!--                                                   class="col-md-3 col-sm-4 control-label date_to"-->
-<!--                                                   for="to">Approval Status-->
-<!--                                            </label>-->
-<!--                                        </td>-->
-<!--                                        <td style="width:250px">-->
-<!--                                            <select class="form-control o_website_form_input"-->
-<!--                                                    id="status" name="status">-->
-<!--                                                <option></option>-->
-<!--                                                <option>draft</option>-->
-<!--                                                <option>validated</option>-->
-<!--                                            </select>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
+                                    <!--                                    <tr>-->
+                                    <!--                                        <td style="width:250px">-->
+                                    <!--                                            <label style="white-space: nowrap; "-->
+                                    <!--                                                   class="col-md-3 col-sm-4 control-label date_to"-->
+                                    <!--                                                   for="to">Approval Status-->
+                                    <!--                                            </label>-->
+                                    <!--                                        </td>-->
+                                    <!--                                        <td style="width:250px">-->
+                                    <!--                                            <select class="form-control o_website_form_input"-->
+                                    <!--                                                    id="status" name="status">-->
+                                    <!--                                                <option></option>-->
+                                    <!--                                                <option>draft</option>-->
+                                    <!--                                                <option>validated</option>-->
+                                    <!--                                            </select>-->
+                                    <!--                                        </td>-->
+                                    <!--                                    </tr>-->
                                     <tr>
                                         <td style="width:250px">
                                             <label class="col-md-3 col-sm-4 control-label date_to"
@@ -222,7 +238,8 @@
                                         </td>
                                         <td style="width:250px">
                                             <select class="form-control o_website_form_input"
-                                                    id="platform" name="platform">
+                                                    id="platform"
+                                                    name="platform">
                                                 <option></option>
                                                 <option>Outsystem</option>
                                                 <option>Appia</option>
@@ -327,7 +344,8 @@
                                        class="form-control o_website_form_input"
                                        name="timesheet" style="display:none;"/>
                                 <label class="col-md-3 col-sm-4 control-label"
-                                       style="white-space: nowrap;" for="name">Reject Reason
+                                       style="white-space: nowrap;" for="name">
+                                    Reject Reason
                                 </label>
                                 <div class="col-12">
                                     <input type="text" id="name"
@@ -354,25 +372,66 @@
 
     <template id="timesheet_checkbox" name="timesheet_checkbox"
               inherit_id="hr_timesheet.portal_my_timesheets">
+        <xpath expr="//thead/tr[contains(@t-attf-class, 'thead-light')]"
+               position="inside">
+            <t t-elif="groupby == 'status'">
+                <th colspan="5">
+                    <em class="font-weight-normal text-muted">Timesheets for
+                    </em>
+                    <span t-field="timesheets[0].validated_status"/>
+                </th>
+                <th colspan="1" class="text-right text-muted">
+                    <t t-if="is_uom_day">
+                        Total:
+                        <span t-esc="timesheets._convert_hours_to_days(hours_spent)"
+                              t-options='{"widget": "timesheet_uom"}'/>
+                    </t>
+                    <t t-else="">
+                        Total:
+                        <span t-esc="hours_spent"
+                              t-options='{"widget": "float_time"}'/>
+                    </t>
+                </th>
+            </t>
+            <t t-elif="groupby == 'platform'">
+                <th colspan="5">
+                    <em class="font-weight-normal text-muted">Timesheets for
+                    </em>
+                    <span t-field="timesheets[0].area"/>
+                </th>
+                <th colspan="1" class="text-right text-muted">
+                    <t t-if="is_uom_day">
+                        Total:
+                        <span t-esc="timesheets._convert_hours_to_days(hours_spent)"
+                              t-options='{"widget": "timesheet_uom"}'/>
+                    </t>
+                    <t t-else="">
+                        Total:
+                        <span t-esc="hours_spent"
+                              t-options='{"widget": "float_time"}'/>
+                    </t>
+                </th>
+            </t>
+        </xpath>
         <xpath expr="//thead/tr/th" position="before">
             <th></th>
         </xpath>
-<!--         <xpath expr="//thead/tr" position="inside">-->
-<!--            <th id="reject_button1" style="display:none"></th>-->
-<!--        </xpath>-->
-<!--            <head>-->
-<!--                <script>-->
-<!--                    $(th).attr('colspan',6);-->
-<!--                </script>-->
-<!--            </head>-->
-<!--       <xpath expr="//thead/tr[contains(@t-attf-class, 'thead-light')]" position="inside">-->
-<!--           <script>-->
+        <!--         <xpath expr="//thead/tr" position="inside">-->
+        <!--            <th id="reject_button1" style="display:none"></th>-->
+        <!--        </xpath>-->
+        <!--            <head>-->
+        <!--                <script>-->
+        <!--                    $(th).attr('colspan',6);-->
+        <!--                </script>-->
+        <!--            </head>-->
+        <!--       <xpath expr="//thead/tr[contains(@t-attf-class, 'thead-light')]" position="inside">-->
+        <!--           <script>-->
 
-<!--               var cell = document.querySelectorAll('table tr.thead-light th:nth-child(2)');-->
-<!--               cell.attr('colspan',6);-->
-<!--               console.log('th',cell)-->
-<!--           </script>-->
-<!--       </xpath>-->
+        <!--               var cell = document.querySelectorAll('table tr.thead-light th:nth-child(2)');-->
+        <!--               cell.attr('colspan',6);-->
+        <!--               console.log('th',cell)-->
+        <!--           </script>-->
+        <!--       </xpath>-->
         <xpath expr="//thead/tr[3]" position="inside">
             <th>
                 Project Type
@@ -389,7 +448,7 @@
         </xpath>
         <xpath expr="//tbody/t/tr/td" position="before">
             <div id="checkboxes">
-                <td>
+                <td id='total_hours' class="total_hours">
                     <span class="checkbox"
                           t-att-id="timesheet.id">
                         <input t-att-id="timesheet.id"
@@ -416,7 +475,7 @@
                 <span t-esc="timesheet.validated_status"
                       t-att-title="timesheet.id"/>
             </td>
-            <td id='reject_button2'  class="reject_button2"
+            <td id='reject_button2' class="reject_button2"
                 t-att-title="timesheet.id" style="display:none;">
                 <a role="button"
                    class="btn btn-secondary flex-grow-1 mb-1 rejectButton"
@@ -449,7 +508,8 @@
             </span>
         </xpath>
         <xpath expr="//t/t[4]/t" position="inside">
-            <span class="edit_button_class" style="margin-right:78.5%;display:none;">
+            <span class="edit_button_class"
+                  style="margin-right:78.5%;display:none;">
 
                 <a role="button"
                    class="btn btn-secondary flex-grow-1 mb-1 createButton"
@@ -467,7 +527,7 @@
                 >
                     Delete
                 </button>
-                 <button class="submit"
+                <button class="submit"
 
 
                         id="submit"
@@ -475,8 +535,16 @@
                 >
                     Submit
                 </button>
-                <div> Hours: <span id="selected_hours" t-options='{"widget": "float_time"}'/></div>
+                <div>Hours:
+                    <span id="selected_hours"
+                          t-options='{"widget": "float_time"}'/>
+                </div>
+
             </span>
+
         </xpath>
+
+
     </template>
+
 </odoo>
