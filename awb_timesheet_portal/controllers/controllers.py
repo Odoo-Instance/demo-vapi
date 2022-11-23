@@ -2,7 +2,22 @@
 from werkzeug.utils import redirect
 from odoo import fields, http, _
 from odoo.http import request
+from odoo.osv import expression
+
+from odoo.addons.account.controllers import portal
+from odoo.addons.hr_timesheet.controllers.portal import TimesheetCustomerPortal
 from odoo.exceptions import UserError,ValidationError
+from collections import OrderedDict
+from dateutil.relativedelta import relativedelta
+from operator import itemgetter
+from datetime import datetime
+
+from odoo import fields, http, _
+from odoo.http import request
+from odoo.tools import date_utils, groupby as groupbyelem
+from odoo.osv.expression import AND, OR
+
+from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
 class WebTimesheetRequest(http.Controller):
     @http.route('/create/timesheets/records',  methods=['POST'], type='json',
@@ -240,7 +255,16 @@ class WebTimesheetRequest(http.Controller):
         }
         return res
 
-
+    @http.route('/create/pdf/records', method='post', type='http',
+                auth='public',
+                website=True, csrf=False)
+    def create_pdf_request(self, **post):
+        pdf = request.env['account.analytic.line'].sudo().create_pdf()
+        print(pdf)
+        pdfhttpheaders = [('Content-Type', 'application/pdf'),
+                          ('Content-Length', len(pdf['context']))]
+        print(pdfhttpheaders)
+        return request.make_response(pdf['context'])
         # timesheet = request.env['account.analytic.line']
         # pdf_timesheet = timesheet.create_pdf()
         # pdf = r.sudo().render_qweb_pdf([int(id)])
@@ -261,32 +285,32 @@ class WebTimesheetRequest(http.Controller):
 #             print(values['timesheet_count'])
 #         return values
 
-# class MyTimesheetCustomerPortal(TimesheetCustomerPortal):
-#
-#     @http.route(['/my/timesheets', '/my/timesheets/page/<int:page>'],
-#                 type='http', auth="user", website=True)
-#     def portal_my_timesheets(self, page=1, sortby=None, filterby=None,
-#                              search=None, search_in='all', groupby='none',
-#                              **kw):
-#         print('lllllllllllllllllllllllllllllllllllllllll')
-# -*- coding: utf-8 -*-
-from werkzeug.utils import redirect
-from odoo import fields, http, _
-from odoo.http import request
-from odoo.osv import expression
 
-from odoo.addons.account.controllers import portal
-from odoo.addons.hr_timesheet.controllers.portal import TimesheetCustomerPortal
-from odoo.exceptions import UserError,ValidationError
-from collections import OrderedDict
-from dateutil.relativedelta import relativedelta
-from operator import itemgetter
-from datetime import datetime
+class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
 
-from odoo import fields, http, _
-from odoo.http import request
-from odoo.tools import date_utils, groupby as groupbyelem
-from odoo.osv.expression import AND, OR
+    # def _get_searchbar_inputs(self):
+    #     searchbar_inputs = super()._get_searchbar_inputs()
+    #     searchbar_inputs.update(
+    #         status={'input': 'status', 'label': _('status')})
+    #     return searchbar_inputs
+
+    def _get_searchbar_groupby(self):
+        searchbar_groupby = super()._get_searchbar_groupby()
+        searchbar_groupby.update(
+            status={'input': 'status', 'label': _('status')},
+            platform={'input': 'platform', 'label': _('Platform')})
+
+        return searchbar_groupby
+
+    def _get_search_domain(self, search_in, search):
+        search_domain = super()._get_search_domain(search_in, search)
+        if search_in in ('status', 'all'):
+            search_domain = expression.OR([search_domain, [('validated_status', 'ilike', search)]])
+        if search_in in ('platform', 'all'):
+            search_domain = expression.OR([search_domain, [('area', 'ilike', search)]])
+
+        return search_domain
+
 
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
