@@ -46,7 +46,6 @@ class WebTimesheetRequest(http.Controller):
     @http.route('/timesheet/request/submit', method='post', type='http', auth='public',
                 website=True, csrf=False)
     def send_request(self, **post):
-        print(post['activity'])
         values = {
             'employee_id': int(post['employee']),
             'date':post['date'],
@@ -87,12 +86,19 @@ class WebTimesheetRequest(http.Controller):
                 auth='user', website=True, csrf=False)
     def approve_record(self, **kw):
         timesheet_id = kw.get('checked')
-        print(timesheet_id)
         for rec in timesheet_id:
             timesheet = request.env['account.analytic.line'].sudo().search([('id','=',int(rec))])
-            if timesheet:
+            if request.env.user.id == timesheet.project_id.user_id.id:
+                if timesheet.project_id.x_studio_project_scope_1 == "External":
+                    for obj in timesheet:
+                        obj.sudo().write({'client_approval':True, 'submitted': False, 'validated_status': 'approval_waiting'})
+                if timesheet.project_id.x_studio_project_scope_1 == "Internal":
+                    for obj in timesheet:
+                        obj.sudo().write({'validated':True, 'submitted': False, 'validated_status': 'validated'})
+            if request.env.user.partner_id.id == timesheet.project_id.partner_id.id:
                 for obj in timesheet:
-                    obj.sudo().write({'validated':True, 'submitted': False, 'validated_status': 'validated'})
+                    obj.sudo().write({'validated': True, 'client_approval': False,
+                                      'validated_status': 'validated'})
         return True
 
     @http.route('/reject/timesheets/records', methods=['POST'], type='json',
@@ -155,7 +161,7 @@ class WebTimesheetRequest(http.Controller):
                     [('id', '=', int(obj))])
                 print(timesheet)
                 timesheet.write(
-                    {'submitted': True, 'validated_status': 'approval_waiting'})
+                    {'submitted': True, 'validated_status': 'submit'})
                 print('timesheet')
             result = "true"
 
@@ -220,7 +226,7 @@ class WebTimesheetRequest(http.Controller):
 
     @http.route('/check/date/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
-    def edit_record(self, **kw):
+    def check_date_record(self, **kw):
         timesheet_result = ""
         employee = request.env['hr.employee'].sudo().search(
             [('user_id', '=', request.env.user.id)])
