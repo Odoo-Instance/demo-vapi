@@ -472,7 +472,7 @@
                       t-att-title="timesheet.id"/>
             </td>
             <td>
-                <span t-esc="timesheet.validated_status"
+                <span t-esc="dict(timesheet.fields_get(allfields=['validated_status'])['validated_status']['selection'])[timesheet.validated_status]"
                       t-att-title="timesheet.id"/>
             </td>
             <td id='reject_button2' class="reject_button2"
@@ -505,6 +505,7 @@
                 >
                     Reject
                 </button>
+
             </span>
         </xpath>
         <xpath expr="//t/t[4]/t" position="inside">
