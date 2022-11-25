@@ -118,7 +118,7 @@ var checkboxesChecked = [];
      if (checkboxes[i].checked) {
         var $item = $(this).closest("tr")
         console.log('chekc',$item[0].cells[7].textContent)
-        total = parseInt(total) + parseInt($item[0].cells[7].textContent)
+        total = parseInt(total) + parseInt($item[0].cells[6].textContent)
 
         document.getElementById("selected_hours").innerHTML = total
 
@@ -231,6 +231,7 @@ window.location.reload();
                         return false;
             }
         checkboxesChecked.push(checkboxes[i].id);
+        console.log('checkedbox',checkboxesChecked)
      }
   }
   if (checkboxesChecked.length > 1) {
@@ -286,19 +287,4 @@ alert("Duplicate Record Exist");
 
   });
 });
-$(".checkbox").click(function() {
-
-var total = 0
-var checkboxes = document.getElementsByName('check');
-var checkboxesChecked = [];
-  for (var i=0; i<checkboxes.length; i++) {
-     if (checkboxes[i].checked) {
-        var $item = $(this).closest("tr")
-        total = parseInt(total) + parseInt($item[0].cells[6].textContent)
-        document.getElementById("selected_hours").innerHTML = total
-     }
-
-  }
-
-  });
 });
