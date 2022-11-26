@@ -238,7 +238,7 @@
 		                        	   </select>   
                                    </div>
                                    <div class="col-lg my-3">
-                                    	<label class="expense_pop_lable">Paid by Employee<span class="required_span"> *</span></label>
+                                    	<label class="expense_pop_lable">Paid by employee<span class="required_span"> *</span></label>
                                     	<input type="checkbox"  name="paid_of_employee" t-attf-class="form-control paid_of_employee required" id="paid_of_employee"  style="height: 21px;width: 21px;margin-left: 23px"/>
                                    </div>
                                   </div>
