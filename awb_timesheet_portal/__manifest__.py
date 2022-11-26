@@ -17,8 +17,11 @@
         'views/templates.xml',
     ],
     'assets': {
-        'web.assets_frontend': ['awb_timesheet_portal/static/js/timesheet_popup.js']
+        'web.assets_frontend': [
+            'awb_timesheet_portal/static/css/timesheet_dialog_design.css',
+            'awb_timesheet_portal/static/js/timesheet_popup.js']
     },
+
     'installable': True,
     'application': False,
     'auto_install': False
