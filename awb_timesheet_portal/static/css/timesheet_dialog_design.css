@@ -9,51 +9,17 @@
 }
 
 /* Full-width input fields */
-input[type=text], input[type=password] {
+.timesheet_form input[type=text], .timesheet_form input[type=password], .timesheet_form select {
   width: 100%;
-  padding: 15px;
-  margin: 5px 0 22px 0;
-  display: inline-block;
-  border: none;
+  padding: 0.5rem 0.5rem;
   background: #f1f1f1;
+  font-size: 0.75rem;
+  border: none;
 }
 
 input[type=text]:focus, input[type=password]:focus {
   background-color: #ddd;
   outline: none;
-}
-
-/* Overwrite default styles of hr */
-hr {
-  border: 1px solid #f1f1f1;
-  margin-bottom: 25px;
-}
-
-/* Set a style for the submit button */
-.registerbtn {
-  background-color: #04AA6D;
-  color: white;
-  padding: 16px 20px;
-  margin: 8px 0;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  opacity: 0.9;
-}
-
-.registerbtn:hover {
-  opacity: 1;
-}
-
-/* Add a blue text color to links */
-a {
-  color: dodgerblue;
-}
-
-/* Set a grey background color and center the text of the "sign in" section */
-.signin {
-  background-color: #f1f1f1;
-  text-align: center;
 }
 
 .timesheet_form {
@@ -65,12 +31,7 @@ a {
     margin-bottom: 0;
 }
 
-.timesheet_form div div select, .timesheet_form div div input{
-    font-size: 12px;
-    padding: 5px;
-    margin: 0;
-}
-
-.submit {
-    margin-top: 15px;
+#myModal {
+    padding: 2px 10px;
+    margin-top: 5px;
 }

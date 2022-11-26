@@ -43,18 +43,16 @@
                                 <div class="timesheet_form">
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="employee">Employee Name :</label>
-                                            <select class="form-control o_website_form_input" id="employee"
-                                                    name="employee" required=""
-                                            >
-                                                <option></option>
-                                            </select>
+                                            <label for="employee-name">Employee Name</label>
+                                            <input type="text" id="employee-name" readonly="1"
+                                                   class="form-control-plaintext"/>
+                                            <input type="hidden" id="employee-id" name="employee"/>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Project :</label>
+                                            <label for="employee">Project</label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="project" name="project"
@@ -64,7 +62,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <label for="client">Client Name :</label>
+                                            <label for="client">Client Name</label>
                                             <select class="form-control o_website_form_input"
                                                     id="client" name="client">
                                                 <option></option>
@@ -75,7 +73,7 @@
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Project Type :</label>
+                                            <label for="employee">Project Type</label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="activity"
@@ -87,17 +85,28 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <label for="date_start">Date :</label>
-                                            <input type="text" id="date_start"
-                                                   name="date" required="" autocomplete="off"
-                                            />
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label for="date_start">Date</label>
+                                                    <input type="text" id="date_start"
+                                                           name="date" required="" autocomplete="off"
+                                                    />
+                                                </div>
+                                                <div class="col-6">
+                                                    <label for="client">Hours</label>
+                                                    <input type="text"
+                                                           class="form-control o_website_form_input"
+                                                           name="hours" required="" autocomplete="off"/>
+                                                </div>
+                                            </div>
+
                                         </div>
 
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-6">
-                                            <label for="employee">Activity :</label>
+                                        <div class="col-12">
+                                            <label for="employee">Activity</label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="project_type"
@@ -108,18 +117,13 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-6">
-                                            <label for="client">Hours :</label>
-                                            <input type="text"
-                                                   class="form-control o_website_form_input"
-                                                   name="hours" required="" autocomplete="off"/>
-                                        </div>
+
 
                                     </div>
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Activity Type :</label>
+                                            <label for="employee">Activity Type</label>
                                             <div class="col-75">
                                                 <!-- TODO: Make this auto generated. based on the selected activity -->
                                                 <select class="form-control o_website_form_input"
@@ -139,13 +143,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6">
-
-                                        </div>
-
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <label for="employee">Platform :</label>
+                                            <label for="employee">Platform</label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="platform"
@@ -158,23 +156,16 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-6">
-
-                                        </div>
 
                                     </div>
 
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="employee">Notes :</label>
+                                            <label for="employee">Notes</label>
                                             <input type="text"
                                                    class="form-control o_website_form_input"
                                                    name="notes" autocomplete="off"/>
                                         </div>
-                                        <div class="col-6">
-
-                                        </div>
-
                                     </div>
                                 </div>
 
@@ -182,10 +173,10 @@
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                 <button type="submit"
-                                            id="warranty_submit"
-                                            class="btn btn-primary btn-md o_website_form_send">
-                                        Create
-                                    </button>
+                                        id="warranty_submit"
+                                        class="btn btn-primary btn-md o_website_form_send">
+                                    Create
+                                </button>
 
                             </div>
                         </div>

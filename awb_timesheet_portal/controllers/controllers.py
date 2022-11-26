@@ -3,6 +3,7 @@ from werkzeug.utils import redirect
 from odoo import fields, http, _
 from odoo.http import request
 
+
 class WebTimesheetRequest(http.Controller):
     @http.route('/create/timesheets/records',  methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
@@ -16,13 +17,18 @@ class WebTimesheetRequest(http.Controller):
         # print(request.env.user.partner_id.id)
         tag_id = request.env['project.tags'].sudo().search([])
         employee_dict = []
+        employee_rec = {}
         partner_dict = []
         project_dict = []
         activity_dict = []
         tag_dict = []
         for record in employee:
-            name = record.name
-            employee_dict.append({'id': record.id, 'name': name})
+            employee_rec.update({
+                'id': record.id,
+                'name': record.name
+            })
+            # name = record.name
+            # employee_dict.append({'id': record.id, 'name': name})
         for record in partner:
             partner_dict.append({'id': record.id, 'name': record.name})
         for record in project_collaberator:
@@ -38,7 +44,8 @@ class WebTimesheetRequest(http.Controller):
             'partner':partner_dict,
             'project':project_dict,
             'activity':activity_dict,
-            'tag':tag_dict
+            'tag':tag_dict,
+            'employee_rec': employee_rec
             }
         return res
 
