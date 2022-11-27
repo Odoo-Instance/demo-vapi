@@ -9,17 +9,25 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	var QWeb = core.qweb;
 	var rpc = require('web.rpc');
 	var _t = core._t;
-	console.log('start');
+
 	$(document).ready(function() {
 		$("table tr.thead-light th:nth-child(2)").attr('colspan', 8);
-		ajax.jsonRpc("/usecheck/records", 'call', {}).then(function(result) {
-			if (result['employee'] != "true") {
-				var x = document.querySelectorAll("#reject_button2");
-				for (let i = 0; i < x.length; i++) {
-					x[i].style.display = "block";
-				}
-				document.getElementById("reject_button1").style.display = "block";
-			}
+
+		ajax.jsonRpc("/usecheck/records", 'call', {
+
+		}).then(function(result) {
+		    try {
+		        if (result['employee'] != "true") {
+                    var x = document.querySelectorAll("#reject_button2");
+                    for (let i = 0; i < x.length; i++) {
+                        x[i].style.display = "block";
+                    }
+                    document.getElementById("reject_button1").style.display = "block";
+                }
+		    } catch (err) {
+		        console.log('Logged in user has no employee assigned.')
+		    }
+
 		});
 
 		$('#mydiv').on('click', '.my_div', function() {
@@ -62,8 +70,11 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
             })
             .then(function(data) {
                 var activity = data['activity_type_rec']
-			    $('.activity_type').val(activity.id)
-			    $('#activity-type').val(activity.name)
+                if(activity.name) {
+                    $('.activity_type').val(activity.id)
+			        $('#activity-type').val(activity.name)
+                }
+
             });
 		});
 
@@ -91,11 +102,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
                 });
             });
 		});
-
-
-
 	});
-
 	$(document).ready(function() {
 		var $submit = $(".button_class").hide()
 		var $edit = $(".edit_button_class").hide(),
@@ -108,26 +115,17 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 					} else {
 						$submit.toggle($cbs.is(":checked"));
-
 					}
-
-
 				});
-
-
 			});
-
 	});
 	$(".checkbox").click(function() {
-		console.log('pppppppppppppppp')
 		var total = 0
-		console.log(total)
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
 			if (checkboxes[i].checked) {
 				var $item = $(this).closest("tr")
-				console.log('chekc', $item[0].cells[7].textContent)
 				total = parseInt(total) + parseInt($item[0].cells[6].textContent)
 
 				document.getElementById("selected_hours").innerHTML = total
@@ -141,12 +139,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 	});
 
-
-
-
-
 	$('.button_class').on('click', '.approve', function() {
-		console.log('sucess')
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
@@ -163,7 +156,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	});
 
 	$('.button_class').on('click', '.reject', function() {
-		console.log('sucess')
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
@@ -186,7 +178,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	});
 
 	$('.edit_button_class').on('click', '.delete', function() {
-		console.log('sucess')
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
@@ -209,7 +200,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	});
 
 	$('.edit_button_class').on('click', '.submit', function() {
-		console.log('sucess')
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
@@ -220,9 +210,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 		ajax.jsonRpc("/submit/timesheets/records", 'call', {
 			'checked': checkboxesChecked
 		}).then(function(result) {
-			console.log(result['result'])
 			if (result['result'] != "true") {
-				console.log('ffffffffffffffffff')
 				alert("Please submit atleast 40 hours of draft timesheet");
 				window.location.reload();
 				return false;
@@ -233,7 +221,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	});
 
 	$('.edit_button_class').on('click', '#edit', function() {
-		console.log('sucess')
 		var checkboxes = document.getElementsByName('check');
 
 		var checkboxesChecked = [];
@@ -247,7 +234,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 					return false;
 				}
 				checkboxesChecked.push(checkboxes[i].id);
-				console.log('checkedbox', checkboxesChecked)
 			}
 		}
 		if (checkboxesChecked.length > 1) {
@@ -281,7 +267,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 	function validateFormcreate() {
 		let x = document.forms["formtime"]["hours"].value;
-		console.log('ccccc', x)
 		if (x > 24) {
 			alert("Not allowed to enter more than 24 hours");
 			return false;
@@ -292,7 +277,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 		let x = document.forms["formtime"]["hours"].value;
 		let y = document.forms["formtime"]["date"].value;
 
-		console.log('ccccc', x)
 		if (x > 24) {
 			alert("Not allowed to enter more than 24 hours");
 			return false;
