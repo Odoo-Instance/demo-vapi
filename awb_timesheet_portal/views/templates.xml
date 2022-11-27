@@ -123,29 +123,15 @@
                                                 </select>
                                             </div>
                                         </div>
-
-
                                     </div>
 
                                     <div class="row">
                                         <div class="col-6">
                                             <label for="employee">Activity Type</label>
                                             <div class="col-75">
-                                                <!-- TODO: Make this auto generated. based on the selected activity -->
-                                                <select class="form-control o_website_form_input"
-                                                        id="activitytype"
-                                                        name="activitytype">
-                                                    <option></option>
-                                                    <option>billable_time</option>
-                                                    <option>billable_fixed</option>
-                                                    <option>non_billable</option>
-                                                    <option>timesheet_revenues
-                                                    </option>
-                                                    <option>service_revenues
-                                                    </option>
-                                                    <option>other_revenues</option>
-                                                    <option>other_costs</option>
-                                                </select>
+                                                <input type="hidden" class="activity_type" name="activity_type"/>
+                                                <input type="text" id="activity-type" readonly="1"
+                                                   class="form-control-plaintext activity_type"/>
                                             </div>
                                         </div>
                                         <div class="col-6">

@@ -18,22 +18,16 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 				for (let i = 0; i < x.length; i++) {
 					x[i].style.display = "block";
 				}
-
 				document.getElementById("reject_button1").style.display = "block";
-				//        document.getElementById("reject_button2").style.display = "none";
-
 			}
 		});
 
 		$('#mydiv').on('click', '.my_div', function() {
-			console.log('sucess');
-
 //			Clear Form
 			$('#project').find('option').remove().end().append('<option value=""></option>');
 			$('#activity').find('option').remove().end().append('<option value=""></option>');
 			$('#project_type').find('option').remove().end().append('<option value=""></option>');
 			$('#client').find('option').remove().end().append('<option value=""></option>');
-
 			ajax.jsonRpc("/create/timesheets/records", 'call', {
 
 			}).then(function(result) {
@@ -42,14 +36,6 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 				$('#employee-id').val(employee.id)
 
 				var client = result['partner']
-//				var ClientSelect = document.getElementById('client');
-//				for (let i = 0; i < client.length; i++) {
-//					var item = document.createElement('option');
-//					item.text = client[i].name
-//					item.id = client[i].id
-//					item.value = client[i].id
-//					ClientSelect.appendChild(item);
-//				}
 				var project = result['project']
 				var ProjectSelect = document.getElementById('project');
 				for (let i = 0; i < project.length; i++) {
@@ -59,24 +45,8 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 					item.value = project[i].id
 					ProjectSelect.appendChild(item);
 				}
-				var activity = result['activity']
-				var ActivitySelect = document.getElementById('activity');
-				for (let i = 0; i < activity.length; i++) {
-					var item = document.createElement('option');
-					item.text = activity[i].name
-					item.id = activity[i].id
-					item.value = activity[i].id
-					ActivitySelect.appendChild(item);
-				}
+
 				var tag = result['tag']
-//				var TagSelect = document.getElementById('activity');
-//				for (let i = 0; i < activity.length; i++) {
-//					var item = document.createElement('option');
-//					item.text = tag[i].name
-//					item.id = tag[i].id
-//					item.value = tag[i].name
-//					TagSelect.appendChild(item);
-//				}
 				$("#date_start").datepicker({
 					changeMonth: true,
 					changeYear: true,
@@ -86,18 +56,39 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 		});
 
+		$('#activity').on('change', function(){
+            ajax.jsonRpc("/get/project/activity/id", 'call', {
+                'activity_id' : $(this).val(),
+            })
+            .then(function(data) {
+                var activity = data['activity_type_rec']
+			    $('.activity_type').val(activity.id)
+			    $('#activity-type').val(activity.name)
+            });
+		});
+
 		$('#project').on('change', function(){
+		    $('#activity').find('option').remove().end().append('<option value=""></option>');
             ajax.jsonRpc("/get/employee/project/id", 'call', {
                 'project_id' : $(this).val(),
             })
             .then(function (data) {
                 var company = data['company_rec']
+                var activity = data['project_activity']
+
 
                 $('#client-name').val(company.name)
 			    $('#client-id').val(company.id)
 
 			    var project = data['project_rec']
 			    $('.project_type').val(project.type)
+
+				$.each(activity, function (i, item) {
+                    $('#activity').append($('<option>', {
+                        value: item.id,
+                        text : item.name
+                    }));
+                });
             });
 		});
 
