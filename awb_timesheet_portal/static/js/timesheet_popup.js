@@ -24,6 +24,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 			}
 		});
+
 		$('#mydiv').on('click', '.my_div', function() {
 			console.log('sucess');
 
@@ -41,14 +42,14 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 				$('#employee-id').val(employee.id)
 
 				var client = result['partner']
-				var ClientSelect = document.getElementById('client');
-				for (let i = 0; i < client.length; i++) {
-					var item = document.createElement('option');
-					item.text = client[i].name
-					item.id = client[i].id
-					item.value = client[i].id
-					ClientSelect.appendChild(item);
-				}
+//				var ClientSelect = document.getElementById('client');
+//				for (let i = 0; i < client.length; i++) {
+//					var item = document.createElement('option');
+//					item.text = client[i].name
+//					item.id = client[i].id
+//					item.value = client[i].id
+//					ClientSelect.appendChild(item);
+//				}
 				var project = result['project']
 				var ProjectSelect = document.getElementById('project');
 				for (let i = 0; i < project.length; i++) {
@@ -59,7 +60,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 					ProjectSelect.appendChild(item);
 				}
 				var activity = result['activity']
-				var ActivitySelect = document.getElementById('project_type');
+				var ActivitySelect = document.getElementById('activity');
 				for (let i = 0; i < activity.length; i++) {
 					var item = document.createElement('option');
 					item.text = activity[i].name
@@ -68,14 +69,14 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 					ActivitySelect.appendChild(item);
 				}
 				var tag = result['tag']
-				var TagSelect = document.getElementById('activity');
-				for (let i = 0; i < activity.length; i++) {
-					var item = document.createElement('option');
-					item.text = tag[i].name
-					item.id = tag[i].id
-					item.value = tag[i].name
-					TagSelect.appendChild(item);
-				}
+//				var TagSelect = document.getElementById('activity');
+//				for (let i = 0; i < activity.length; i++) {
+//					var item = document.createElement('option');
+//					item.text = tag[i].name
+//					item.id = tag[i].id
+//					item.value = tag[i].name
+//					TagSelect.appendChild(item);
+//				}
 				$("#date_start").datepicker({
 					changeMonth: true,
 					changeYear: true,
@@ -84,6 +85,23 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 			});
 
 		});
+
+		$('#project').on('change', function(){
+            ajax.jsonRpc("/get/employee/project/id", 'call', {
+                'project_id' : $(this).val(),
+            })
+            .then(function (data) {
+                var company = data['company_rec']
+
+                $('#client-name').val(company.name)
+			    $('#client-id').val(company.id)
+
+			    var project = data['project_rec']
+			    $('.project_type').val(project.type)
+            });
+		});
+
+
 
 	});
 

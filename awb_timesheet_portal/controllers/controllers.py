@@ -5,6 +5,30 @@ from odoo.http import request
 
 
 class WebTimesheetRequest(http.Controller):
+
+    @http.route('/get/employee/project/id', methods=['POST'], type='json', auth='user', website=True, csrf=False)
+    def request_project(self, **kw):
+
+        project_id = kw.get('project_id')
+        result = request.env['project.project'].sudo().search([('id','=', project_id)])
+
+        company_rec = {}
+        project_dic = {}
+        for record in result:
+            company_rec.update({
+                'id': record.partner_id.id,
+                'name': record.partner_id.name
+            })
+            project_dic.update({
+                'type': record.x_studio_project_scope_1
+            })
+
+        res = {
+            'company_rec': company_rec,
+            'project_rec': project_dic
+        }
+        return res
+
     @http.route('/create/timesheets/records',  methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
     def request(self):
@@ -18,6 +42,7 @@ class WebTimesheetRequest(http.Controller):
         tag_id = request.env['project.tags'].sudo().search([])
         employee_dict = []
         employee_rec = {}
+
         partner_dict = []
         project_dict = []
         activity_dict = []
@@ -40,11 +65,11 @@ class WebTimesheetRequest(http.Controller):
         for record in tag_id:
             tag_dict.append({'id': record.id, 'name': record.name})
         res = {
-                'employee':employee_dict,
-            'partner':partner_dict,
-            'project':project_dict,
-            'activity':activity_dict,
-            'tag':tag_dict,
+            'employee': employee_dict,
+            'partner': partner_dict,
+            'project': project_dict,
+            'activity': activity_dict,
+            'tag': tag_dict,
             'employee_rec': employee_rec
             }
         return res
@@ -55,14 +80,14 @@ class WebTimesheetRequest(http.Controller):
     def send_request(self, **post):
         values = {
             'employee_id': int(post['employee']),
-            'date':post['date'],
-            'project_id':int(post['project']),
-            'task_id':int(post['projectt']),
-            'name':post['notes'],
-            'unit_amount':float(post['hours']),
-            'area':post['platform'],
-            'timesheet_invoice_type':post['activitytype'],
-            'project_type':post['activity']
+            'date': post['date'],
+            'project_id': int(post['project']),
+            'task_id': int(post['activity']),
+            'name': post['notes'],
+            'unit_amount': float(post['hours']),
+            'area': post['platform'],
+            'timesheet_invoice_type': post['activitytype'],
+            'project_type': post['project_type']
 
         }
         employee = request.env['hr.employee'].sudo().search(

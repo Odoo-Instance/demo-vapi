@@ -63,10 +63,13 @@
                                         </div>
                                         <div class="col-6">
                                             <label for="client">Client Name</label>
-                                            <select class="form-control o_website_form_input"
-                                                    id="client" name="client">
-                                                <option></option>
-                                            </select>
+<!--                                            <select class="form-control o_website_form_input"-->
+<!--                                                    id="client" name="client">-->
+<!--                                                <option></option>-->
+<!--                                            </select>-->
+                                            <input type="text" id="client-name" readonly="1"
+                                                   class="form-control-plaintext"/>
+                                            <input type="hidden" id="client-id" name="client"/>
                                         </div>
 
                                     </div>
@@ -75,13 +78,16 @@
                                         <div class="col-6">
                                             <label for="employee">Project Type</label>
                                             <div class="col-75">
-                                                <select class="form-control o_website_form_input"
-                                                        id="activity"
-                                                        name="activity" required=""
-                                                >
-                                                    <option></option>
+<!--                                                <select class="form-control o_website_form_input"-->
+<!--                                                        id="activity"-->
+<!--                                                        name="activity" required=""-->
+<!--                                                >-->
+<!--                                                    <option></option>-->
 
-                                                </select>
+<!--                                                </select>-->
+                                                <input type="hidden" class="project_type" name="project_type"/>
+                                                <input type="text" id="project-type" readonly="1"
+                                                   class="form-control-plaintext project_type"/>
                                             </div>
                                         </div>
                                         <div class="col-6">
@@ -109,8 +115,8 @@
                                             <label for="employee">Activity</label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
-                                                        id="project_type"
-                                                        name="projectt" required=""
+                                                        id="activity"
+                                                        name="activity" required=""
                                                 >
                                                     <option></option>
 
