@@ -34,7 +34,8 @@
                     <input type="hidden" name="csrf_token"
                            t-att-value="request.csrf_token()"/>
                     <div id="warrantypopup" class="modal fade">
-                        <div id="create-timesheet-modal" class="modal-dialog modal-content"
+                        <div id="create-timesheet-modal"
+                             class="modal-dialog modal-content"
                              style="border:solid 2px white; height:auto;width:700px;margin-top:50px">
                             <div class="modal-header">
                                 <h5 class="modal-title">Create Timesheet</h5>
@@ -43,66 +44,90 @@
                                 <div class="timesheet_form">
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="employee-name">Employee Name</label>
-                                            <input type="text" id="employee-name" readonly="1"
+                                            <label for="employee-name">Employee
+                                                Name
+                                            </label>
+                                            <input type="text"
+                                                   id="employee-name"
+                                                   readonly="1"
                                                    class="form-control-plaintext"/>
-                                            <input type="hidden" id="employee-id" name="employee"/>
+                                            <input type="hidden"
+                                                   id="employee-id"
+                                                   name="employee"/>
                                         </div>
                                     </div>
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Project</label>
+                                            <label for="employee">Project
+                                            </label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
-                                                        id="project" name="project"
+                                                        id="project"
+                                                        name="project"
                                                         required="">
                                                     <option></option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <label for="client">Client Name</label>
-<!--                                            <select class="form-control o_website_form_input"-->
-<!--                                                    id="client" name="client">-->
-<!--                                                <option></option>-->
-<!--                                            </select>-->
-                                            <input type="text" id="client-name" readonly="1"
+                                            <label for="client">Client Name
+                                            </label>
+                                            <!--                                            <select class="form-control o_website_form_input"-->
+                                            <!--                                                    id="client" name="client">-->
+                                            <!--                                                <option></option>-->
+                                            <!--                                            </select>-->
+                                            <input type="text" id="client-name"
+                                                   readonly="1"
                                                    class="form-control-plaintext"/>
-                                            <input type="hidden" id="client-id" name="client"/>
+                                            <input type="hidden" id="client-id"
+                                                   name="client"/>
                                         </div>
 
                                     </div>
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Project Type</label>
+                                            <label for="employee">Project Type
+                                            </label>
                                             <div class="col-75">
-<!--                                                <select class="form-control o_website_form_input"-->
-<!--                                                        id="activity"-->
-<!--                                                        name="activity" required=""-->
-<!--                                                >-->
-<!--                                                    <option></option>-->
+                                                <!--                                                <select class="form-control o_website_form_input"-->
+                                                <!--                                                        id="activity"-->
+                                                <!--                                                        name="activity" required=""-->
+                                                <!--                                                >-->
+                                                <!--                                                    <option></option>-->
 
-<!--                                                </select>-->
-                                                <input type="hidden" class="project_type" name="project_type"/>
-                                                <input type="text" id="project-type" readonly="1"
-                                                   class="form-control-plaintext project_type"/>
+                                                <!--                                                </select>-->
+                                                <input type="hidden"
+                                                       class="project_type"
+                                                       name="project_type"/>
+                                                <input type="text"
+                                                       id="project-type"
+                                                       readonly="1"
+                                                       class="form-control-plaintext project_type"/>
                                             </div>
                                         </div>
                                         <div class="col-6">
                                             <div class="row">
                                                 <div class="col-6">
-                                                    <label for="date_start">Date</label>
-                                                    <input type="text" id="date_start"
-                                                           name="date" required="" autocomplete="off"
+                                                    <label for="date_start">
+                                                        Date
+                                                    </label>
+                                                    <input type="text"
+                                                           id="date_start"
+                                                           name="date"
+                                                           required=""
+                                                           autocomplete="off"
                                                     />
                                                 </div>
                                                 <div class="col-6">
-                                                    <label for="client">Hours</label>
+                                                    <label for="client">Hours
+                                                    </label>
                                                     <input type="text"
                                                            class="form-control o_website_form_input"
-                                                           name="hours" required="" autocomplete="off"/>
+                                                           name="hours"
+                                                           required=""
+                                                           autocomplete="off"/>
                                                 </div>
                                             </div>
 
@@ -112,11 +137,13 @@
 
                                     <div class="row">
                                         <div class="col-12">
-                                            <label for="employee">Activity</label>
+                                            <label for="employee">Activity
+                                            </label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="activity"
-                                                        name="activity" required=""
+                                                        name="activity"
+                                                        required=""
                                                 >
                                                     <option></option>
 
@@ -127,15 +154,22 @@
 
                                     <div class="row">
                                         <div class="col-6">
-                                            <label for="employee">Activity Type</label>
+                                            <label for="employee">Activity
+                                                Type
+                                            </label>
                                             <div class="col-75">
-                                                <input type="hidden" class="activity_type" name="activity_type"/>
-                                                <input type="text" id="activity-type" readonly="1"
-                                                   class="form-control-plaintext activity_type"/>
+                                                <input type="hidden"
+                                                       class="activity_type"
+                                                       name="activity_type"/>
+                                                <input type="text"
+                                                       id="activity-type"
+                                                       readonly="1"
+                                                       class="form-control-plaintext activity_type"/>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <label for="employee">Platform</label>
+                                            <label for="employee">Platform
+                                            </label>
                                             <div class="col-75">
                                                 <select class="form-control o_website_form_input"
                                                         id="platform"
@@ -144,7 +178,8 @@
                                                     <option>Outsystem</option>
                                                     <option>Appia</option>
                                                     <option>UI/UX</option>
-                                                    <option>Not_Applicable</option>
+                                                    <option>Not_Applicable
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
@@ -156,14 +191,17 @@
                                             <label for="employee">Notes</label>
                                             <input type="text"
                                                    class="form-control o_website_form_input"
-                                                   name="notes" autocomplete="off"/>
+                                                   name="notes"
+                                                   autocomplete="off"/>
                                         </div>
                                     </div>
                                 </div>
 
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary"
+                                        data-dismiss="modal">Close
+                                </button>
                                 <button type="submit"
                                         id="warranty_submit"
                                         class="btn btn-primary btn-md o_website_form_send">
@@ -175,9 +213,9 @@
                     </div>
                 </form>
                 <form action="/edit/request" method="post"
-                      id="formtime" enctype="multipart/form-data">
+                      id="formedit" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token"
-                    />
+                           t-att-value="request.csrf_token()"/>
                     <div id="editpopup" class="modal fade"
                          style="heght:50%">
                         <div class="modal-dialog modal-content"
@@ -219,7 +257,7 @@
                                 <label class="col-md-3 col-sm-4 control-label"
                                        for="hours">Hours
                                 </label>
-                                <div class="col-12">
+                                <div class="col-12" id="hours1">
                                     <input type="text" id="hours"
                                            class="form-control o_website_form_input"
                                            name="hours"/>
@@ -268,7 +306,7 @@
                                  class="form-group row form-field">
                                 <div style="padding:0 45% 0 45%">
                                     <button type="submit"
-                                            id="edit_submit"
+                                            id="edit__update_submit"
                                             class="btn btn-primary btn-md o_website_form_send">
                                         Update
                                     </button>

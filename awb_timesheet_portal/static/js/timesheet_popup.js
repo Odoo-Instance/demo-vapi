@@ -86,14 +86,10 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
             .then(function (data) {
                 var company = data['company_rec']
                 var activity = data['project_activity']
-
-
                 $('#client-name').val(company.name)
 			    $('#client-id').val(company.id)
-
 			    var project = data['project_rec']
 			    $('.project_type').val(project.type)
-
 				$.each(activity, function (i, item) {
                     $('#activity').append($('<option>', {
                         value: item.id,
@@ -106,36 +102,34 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	$(document).ready(function() {
 		var $submit = $(".button_class").hide()
 		var $edit = $(".edit_button_class").hide(),
-
 			$cbs = $('input[name="check"]').click(function() {
-
 				ajax.jsonRpc("/usecheck/records", 'call', {}).then(function(result) {
 					if (result['employee'] === "true") {
 						$edit.toggle($cbs.is(":checked"));
-
 					} else {
 						$submit.toggle($cbs.is(":checked"));
 					}
 				});
 			});
 	});
-	$(".checkbox").click(function() {
+
+	$(".checkbox").click(function(){
 		var total = 0
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
 			if (checkboxes[i].checked) {
-				var $item = $(this).closest("tr")
-				total = parseInt(total) + parseInt($item[0].cells[6].textContent)
-
-				document.getElementById("selected_hours").innerHTML = total
-
+			checkboxesChecked.push(checkboxes[i].id);
+//				var $item = $(this).closest("tr")
+//				var value = parseFloat($item[0].cells[6].textContent)
 			}
-
+//            total = parseFloat(total) + parseFloat($item[0].cells[6].textContent)
 		}
-
-
-
+		ajax.jsonRpc("/time/total", 'call', {
+			'checked': checkboxesChecked
+		}).then(function(result) {
+			document.getElementById("selected_hours").innerHTML = result['total']
+		});
 
 	});
 
@@ -295,4 +289,30 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 
 		});
 	});
+
+	$("#edit_submit").click(function(e) {
+		let x = document.forms["formedit"]["hours"].value;
+		let y = document.forms["formedit"]["date"].value;
+		let z = document.forms["formedit"]["timesheet"].value;
+
+		if (x > 24) {
+			alert("Not allowed to enter more than 24 hours");
+			return false;
+		}
+
+		ajax.jsonRpc("/check/update/date/records", 'call', {
+			'date': y,
+			'id':z
+		}).then(function(result) {
+
+			if (result['timesheet'] === "true") {
+
+				alert("Duplicate Record Exist");
+
+
+			}
+
+		});
+	});
+
 });

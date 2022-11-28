@@ -10,10 +10,12 @@ _logger = logging.getLogger(__name__)
 
 class WebTimesheetRequest(http.Controller):
 
-    @http.route('/get/project/activity/id', method=['GET'], type='json', auth='user', website=True, csrf=False)
+    @http.route('/get/project/activity/id', method=['GET'], type='json',
+                auth='user', website=True, csrf=False)
     def request_activity(self, **kw):
         activity_id = kw.get('activity_id')
-        result = request.env['project.task'].sudo().search([('id', '=', activity_id)])
+        result = request.env['project.task'].sudo().search(
+            [('id', '=', activity_id)])
 
         activity_type = {}
 
@@ -28,11 +30,13 @@ class WebTimesheetRequest(http.Controller):
         }
         return res
 
-    @http.route('/get/employee/project/id', methods=['POST'], type='json', auth='user', website=True, csrf=False)
+    @http.route('/get/employee/project/id', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
     def request_project(self, **kw):
 
         project_id = kw.get('project_id')
-        result = request.env['project.project'].sudo().search([('id', '=', project_id)])
+        result = request.env['project.project'].sudo().search(
+            [('id', '=', project_id)])
         result_project_task = request.env['project.task'].sudo().search(
             [('user_ids', 'in', [request.env.user.id])])
 
@@ -51,7 +55,8 @@ class WebTimesheetRequest(http.Controller):
 
         for record in result_project_task:
             if int(record.project_id.id) == int(project_id):
-                activity_list.append({'id': record.id, 'name': record.name, 'project_id': record.project_id.id})
+                activity_list.append({'id': record.id, 'name': record.name,
+                                      'project_id': record.project_id.id})
 
         res = {
             'company_rec': company_rec,
@@ -63,10 +68,12 @@ class WebTimesheetRequest(http.Controller):
     @http.route('/create/timesheets/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
     def request(self):
-        employee = request.env['hr.employee'].sudo().search([('user_id', '=', request.env.user.id)])
+        employee = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)])
         partner = request.env['res.partner'].sudo().search([])
         # project = request.env['project.project'].sudo().search([('collaborator_ids','in', True)])
-        project_collaberator = request.env['project.collaborator'].sudo().search(
+        project_collaberator = request.env[
+            'project.collaborator'].sudo().search(
             [('partner_id', '=', request.env.user.partner_id.id)])
         # print(project.collaborator_ids.partner_id)
         # print(request.env.user.partner_id.id)
@@ -88,9 +95,11 @@ class WebTimesheetRequest(http.Controller):
         for record in partner:
             partner_dict.append({'id': record.id, 'name': record.name})
         for record in project_collaberator:
-            project_dict.append({'id': record.project_id.id, 'name': record.project_id.name})
+            project_dict.append(
+                {'id': record.project_id.id, 'name': record.project_id.name})
             # for record in activity:
-            activity = request.env['project.task'].sudo().search([('project_id', '=', record.project_id.id)])
+            activity = request.env['project.task'].sudo().search(
+                [('project_id', '=', record.project_id.id)])
             for record in activity:
                 activity_dict.append({'id': record.id, 'name': record.name})
         for record in tag_id:
@@ -105,7 +114,8 @@ class WebTimesheetRequest(http.Controller):
         }
         return res
 
-    @http.route('/timesheet/request/submit', method='post', type='http', auth='public',
+    @http.route('/timesheet/request/submit', method='post', type='http',
+                auth='public',
                 website=True, csrf=False)
     def send_request(self, **post):
         values = {
@@ -141,28 +151,38 @@ class WebTimesheetRequest(http.Controller):
             'name': post['name'],
             'unit_amount': post['hours']
         }
-        req = request.env['account.analytic.line'].sudo().search([('id', '=', id)])
-        req.update(values)
-        return redirect('/my/timesheets')
+        req = request.env['account.analytic.line'].sudo().search(
+            [('id', '=', id)])
+        timesheet = request.env['account.analytic.line'].sudo().search(
+            [('id', '!=', id),
+             ('date', '=', post['date']),
+             ('employee_id', '=', req.employee_id.id)])
+        if not timesheet:
+            req.update(values)
+            return redirect('/my/timesheets')
 
     @http.route('/approve/timesheets/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
     def approve_record(self, **kw):
         timesheet_id = kw.get('checked')
         for rec in timesheet_id:
-            timesheet = request.env['account.analytic.line'].sudo().search([('id', '=', int(rec))])
+            timesheet = request.env['account.analytic.line'].sudo().search(
+                [('id', '=', int(rec))])
             if request.env.user.id == timesheet.project_id.user_id.id:
                 if timesheet.project_id.x_studio_project_scope_1 == "External":
                     for obj in timesheet:
                         obj.sudo().write(
-                            {'client_approval': True, 'submitted': False, 'validated_status': 'approval_waiting'})
+                            {'client_approval': True, 'submitted': False,
+                             'validated_status': 'approval_waiting'})
                 if timesheet.project_id.x_studio_project_scope_1 == "Internal":
                     for obj in timesheet:
-                        obj.sudo().write({'validated': True, 'submitted': False, 'validated_status': 'validated'})
+                        obj.sudo().write({'validated': True, 'submitted': False,
+                                          'validated_status': 'validated'})
             if request.env.user.partner_id.id == timesheet.project_id.partner_id.id:
                 for obj in timesheet:
-                    obj.sudo().write({'validated': True, 'client_approval': False,
-                                      'validated_status': 'validated'})
+                    obj.sudo().write(
+                        {'validated': True, 'client_approval': False,
+                         'validated_status': 'validated'})
         return True
 
     @http.route('/reject/timesheets/records', methods=['POST'], type='json',
@@ -177,7 +197,8 @@ class WebTimesheetRequest(http.Controller):
                 for obj in timesheet:
                     if obj.validated_status != 'validated':
                         obj.write(
-                            {'rejected': True, 'submitted': False, 'validated_status': 'rejected'})
+                            {'rejected': True, 'submitted': False,
+                             'validated_status': 'rejected'})
                         result = "true"
                     else:
                         result = "false"
@@ -261,7 +282,8 @@ class WebTimesheetRequest(http.Controller):
         print(timesheet)
         for record in timesheet:
             timesheet_dict.append({'id': record.id, 'name': record.name,
-                                   'date': record.date, 'hours': timesheet.unit_amount
+                                   'date': record.date,
+                                   'hours': timesheet.unit_amount
                                       , 'state': record.validated_status})
 
         res = {
@@ -279,7 +301,8 @@ class WebTimesheetRequest(http.Controller):
 
             'name': post['name'],
             'validated_status': 'rejected',
-            'submitted': False
+            'submitted': False,
+            'rejected': True
         }
         req = request.env['account.analytic.line'].sudo().search(
             [('id', '=', id)])
@@ -305,6 +328,43 @@ class WebTimesheetRequest(http.Controller):
         res = {
             'timesheet': timesheet_result
 
+        }
+        return res
+
+    @http.route('/check/update/date/records', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
+    def check_date_record(self, **kw):
+        timesheet_result = ""
+        employee = request.env['hr.employee'].sudo().search(
+            [('user_id', '=', request.env.user.id)])
+        timesheet_date = kw.get('date')
+        timesheet_id = kw.get('id')
+        timesheet = request.env['account.analytic.line'].sudo().search(
+            [('date', '=', timesheet_date), ('employee_id', '=', employee.id),
+             ('validated_status', '!=', 'rejected'),
+             ('id', '!=', int(timesheet_id))])
+        print(timesheet)
+        if timesheet:
+            timesheet_result = "true"
+        else:
+            timesheet_result = "false"
+        res = {
+            'timesheet': timesheet_result
+
+        }
+        return res
+
+    @http.route('/time/total', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
+    def total_time(self, **kw):
+        timesheet = kw.get('checked')
+        total_hours = 0
+        for timesheet in timesheet:
+            timesheet_id = request.env['account.analytic.line'].sudo().search(
+                [('id', '=', int(timesheet))])
+            total_hours += int(timesheet_id.unit_amount)
+        res = {
+            'total': total_hours
         }
         return res
 

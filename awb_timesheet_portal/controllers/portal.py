@@ -4,7 +4,7 @@ from odoo.osv import expression
 
 from odoo.addons.account.controllers import portal
 from odoo.addons.hr_timesheet.controllers.portal import TimesheetCustomerPortal
-from odoo.exceptions import UserError,ValidationError
+from odoo.exceptions import UserError, ValidationError
 from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
 from operator import itemgetter
@@ -15,7 +15,9 @@ from odoo.http import request
 from odoo.tools import date_utils, groupby as groupbyelem
 from odoo.osv.expression import AND, OR
 
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+from odoo.addons.portal.controllers.portal import CustomerPortal, \
+    pager as portal_pager
+
 
 class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
 
@@ -30,18 +32,19 @@ class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
     def _get_search_domain(self, search_in, search):
         search_domain = super()._get_search_domain(search_in, search)
         if search_in in ('status', 'all'):
-            search_domain = expression.OR([search_domain, [('validated_status', 'ilike', search)]])
+            search_domain = expression.OR(
+                [search_domain, [('validated_status', 'ilike', search)]])
         if search_in in ('platform', 'all'):
-            search_domain = expression.OR([search_domain, [('area', 'ilike', search)]])
+            search_domain = expression.OR(
+                [search_domain, [('area', 'ilike', search)]])
 
         return search_domain
-
 
     def _get_groupby_mapping(self):
         groupby_mapping = super()._get_groupby_mapping()
         groupby_mapping.update(
             status='validated_status',
-        platform='area')
+            platform='area')
         return groupby_mapping
 
     def _get_searchbar_sortings(self):
@@ -108,7 +111,10 @@ class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
         order = searchbar_sortings[sortby]['order']
         # default filter by value
         if not filterby:
-            filterby = 'status'
+            if not request.env.user.employee_count:
+                filterby = 'status'
+            else:
+                filterby = 'all'
         domain = AND([domain, searchbar_filters[filterby]['domain']])
 
         if search and search_in:
@@ -147,8 +153,9 @@ class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
                         groupbyelem(timesheets, itemgetter('date'))]
 
                 elif groupby == 'status':
-                    time_data = Timesheet_sudo.read_group(domain, ['validated_status',
-                                                                   'unit_amount:sum'],
+                    time_data = Timesheet_sudo.read_group(domain,
+                                                          ['validated_status',
+                                                           'unit_amount:sum'],
                                                           ['validated_status'])
                     mapped_time = dict(
                         [(m['validated_status'], m['unit_amount'])
