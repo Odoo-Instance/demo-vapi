@@ -23,6 +23,8 @@ class ResConfigSettings(models.TransientModel):
         ('4', '4 Week'),
         ('5', '5 Week'),
         ], 'Select No. of Week')
+    time = fields.Float(string='Time')
+
 
     @api.model
     def get_values(self):
@@ -31,7 +33,7 @@ class ResConfigSettings(models.TransientModel):
             send_employee_reminder = self.env['ir.config_parameter'].sudo().get_param('send_employee_reminder'),
             dayofweek = self.env['ir.config_parameter'].sudo().get_param('dayofweek'),
             select_week = self.env['ir.config_parameter'].sudo().get_param('select_week'),
-
+            time = self.env['ir.config_parameter'].sudo().get_param('time'),
 
         )
         return res
@@ -42,6 +44,8 @@ class ResConfigSettings(models.TransientModel):
         IrConfig.set_param('send_employee_reminder', self.send_employee_reminder)
         IrConfig.set_param('dayofweek', self.dayofweek)
         IrConfig.set_param('select_week', self.select_week)
+        IrConfig.set_param('time', self.time)
+
 
 
 

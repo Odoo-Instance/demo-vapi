@@ -10,7 +10,7 @@
                 <xpath expr="//div[@data-key='hr']" position="inside">
                     <h2>Set Employe Timesheet Reminder</h2>
                     <div class="row mt16 o_settings_container">
-                        <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="col-12 col-lg-12 o_setting_box">
                             <div class="o_setting_left_pane">
                                 <field name="send_employee_reminder" />
                             </div>
@@ -29,23 +29,31 @@
                                     <div class="mt16">
                                         <label
                                             for="dayofweek"
-                                            class="o_light_label"
+                                          
+                                            class="col-lg-3 o_light_label"
                                         />
                                         <field
                                             name="dayofweek"
                                             attrs="{'required': [('send_employee_reminder','=',True)]}"
                                             class="oe_inline"
+                                             style="width: 100px; margin-right: 8px;"
+                                        />
+                                        <field
+                                            name="time"
+                                            attrs="{'required': [('send_employee_reminder','=',True)]}"
+                                            class="oe_inline" widget="float_time"
                                         />
                                     </div>
                                      <div class="mt16">
                                         <label
                                             for="select_week"
-                                            class="o_light_label"
+                                            class="col-lg-3 o_light_label"
                                         />
                                         <field
                                             name="select_week"
                                             attrs="{'required': [('send_employee_reminder','=',True)]}"
                                             class="oe_inline"
+                                            style="width: 100px; margin-right: 8px;"
                                         />
                                     </div>
                                 </div>
@@ -93,6 +101,6 @@
             <field name="view_mode">tree,form</field>
         </record>
         <menuitem name="Weekly Details" id="timesheet_weekly_details_menu" parent="hr_timesheet.menu_hr_time_tracking"
-              action="awb_vapi_custom_scheduler.timesheet_weekly_details_action_window"/> -->
+              action="awb_timesheet_notification.timesheet_weekly_details_action_window"/> -->
     </data>
 </odoo>
