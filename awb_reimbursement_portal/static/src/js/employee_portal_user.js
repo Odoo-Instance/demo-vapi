@@ -8,7 +8,7 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 	var ExpensesDetailsForm = Widget.extend({
 		events: {
 			'click .expense_line_submit': '_onSubmit_line',
-			'click .checkbox': '_onClickCheckbox',
+			'click .expense_checkbox': '_onClickCheckbox',
 	    },
 	    start: function () {
 	        var self = this;
@@ -91,23 +91,16 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 	    },
 	    /*** Submit button action  ***/
 	    _onSubmit_line:function(ev){
-	    	var checkboxes = document.getElementsByName('check');
+	    	var checkboxes = document.getElementsByName('check_box');
 	    	var checkboxesChecked = [];
 	    	  for (var i=0; i<checkboxes.length; i++) {
 	    	     if (checkboxes[i].checked) {
 	    	        checkboxesChecked.push(checkboxes[i].id);
 	    	     }
 	    	  }
-	    	  /* Cache the table. */
-	    	  const table =  document.getElementById("delete_row");
-	    	  
-	    	  for (const [index, row] of [...table.rows].entries()) {
-				    if (row.querySelector('input:checked')) {
-				      table.deleteRow(index);
-				    }
-				  }
+	    	  $('input:checked').not('.all').parents("tr").remove();
 	    	 ajax.jsonRpc("/submit/expenses", 'call',{'checked':checkboxesChecked}).then(function(modal){
-	    		 $('.submit_lines_ids tr#empty_lines').before(modal);
+	    		 $('.expense_lines_ids tr#empty_lines').before(modal);
 	    		  });
 	    },
 	    /*** Checkbox click action  ***/

@@ -62,8 +62,8 @@
                   
                          <tr id="empty_lines_tr" class="expense_tr">
 	                         	<td>
-		                         	<span class="checkbox" t-att-id="expense.id">
-		                   			 	<input t-att-id="expense.id" t-att-title="expense.state" name="check" type="checkbox"/>
+		                         	<span class="expense_checkbox" t-att-id="expense.id">
+		                   			 	<input t-att-id="expense.id" t-att-title="expense.state" name="check_box" type="checkbox"/>
 		                			</span>
 	                        	 </td>
 								<td t-attf-class="status empty_line" t-att-id="expense.state" name="status"><span t-field="expense.state"/></td>
@@ -88,55 +88,6 @@
             	 <span style="float:right">
    		 		<button type="button" style="display:none" id="submit" name="submit" class="btn btn-primary submit expense_line_submit">Submit</button>
    		 		</span>
-   		 		<div style="margin-top:4%">
-   		 		<!-- Submitted table action -->
-            	 <t t-call="portal.portal_table">
-                 	<thead style="font-size: 0.8rem">
-                    <tr class="active">
-                   		 <th></th>
-                        <th>Status</th>
-                        <th>Description</th>
-                        <th>Product</th>
-                        <th>Total</th>
-                        <th>Taxes</th>
-                        <th>Bill Reference</th>
-                        <th>Expense Date</th>
-                        <th>Account</th>
-                        <th>Analytic Account</th>
-                        <th>Analytic Tags</th>
-                        <th>Employees</th>
-                        <th>Paid by Employee</th>
-                       </tr>
-                 </thead>
-                 <tbody style="font-size: 0.8rem" class="submit_lines_ids">
-	                 <tr id="empty_lines" t-attf-class="expense_tr new_row">
-	                  </tr>
-	                  <t t-foreach="state_expenses" t-as="expense">
-                                <tr id="submit_lines" class="expense_trs">
-									<td>
-		                               	<span class="checkbox" t-att-id="expense.id">
-				                       		 <input t-att-id="expense.id" t-att-title="expense.state" name="check" type="checkbox"/>
-				                    	</span>
-	                                </td>		
-	                                <td class="status empty_line" name="status"><span t-field="expense.state"/></td>
-									<td class="description empty_line" name="description"><span t-field="expense.name"/></td>
-									<td class="product empty_line" name="product"><span t-field="expense.product_id.name"/></td>
-									<td class="total empty_line" name="total"><span t-field="expense.total_amount"/><span t-field="expense.currency_id"/></td>
-									<td class="taxes empty_line" name="taxes"><span t-field="expense.tax_ids"/></td>
-									<td class="bill_reference empty_line" name="bill_reference"><span t-field="expense.reference"/></td>
-									<td class="expense_Date empty_line" name="expense_date"><span t-field="expense.date"/></td>
-									<td class="account empty_line" name="account"><span t-field="expense.account_id"/></td>
-									<td class="analytic_account empty_line" name="analytic_account"><span t-field="expense.analytic_account_id"/></td>
-									<td class="analytic_tages empty_line" name="analytic_tages"><span t-field="expense.analytic_tag_ids"/></td>
-									<td class="employees empty_line" name="employees"><span t-field="expense.employee_id"/></td>
-									<td class="paid_of_employee empty_line" name="paid_of_employee"><span><t t-if="expense.payment_mode == 'own_account'">True</t><t t-else="">
-				                  			False
-				                  		</t></span></td>
-								</tr>
-								</t>
-                 	 </tbody>
-                 	 </t>
-                 	 </div>
             	</div>
           	</t>
          </template>
@@ -238,7 +189,7 @@
 		                        	   </select>   
                                    </div>
                                    <div class="col-lg my-3">
-                                    	<label class="expense_pop_lable">Paid by employee<span class="required_span"> *</span></label>
+                                    	<label class="expense_pop_lable">Paid by Employee<span class="required_span"> *</span></label>
                                     	<input type="checkbox"  name="paid_of_employee" t-attf-class="form-control paid_of_employee required" id="paid_of_employee"  style="height: 21px;width: 21px;margin-left: 23px"/>
                                    </div>
                                   </div>
@@ -258,8 +209,8 @@
 		<tr class="expense_tr" t-att-id="count" linesid="0">
 		
 			<td>
-	           	<span class="checkbox" t-att-id="expense.id">
-	     		 <input t-att-id="expense.id" t-att-title="expense.id" name="check" t-att-class="check" type="checkbox"/>
+	           	<span class="expense_checkbox" t-att-id="expense.id">
+	     		 <input t-att-id="expense.id" t-att-title="expense.id" name="check_box" t-att-class="check" type="checkbox"/>
 	  			</span>
            </td>
           <td class="state" name="state"><span t-field="expense.state"/></td>
@@ -278,11 +229,12 @@
 	</template>
 <!-- Submitted table design -->	
 	<template id="submitted_expense_lines_row">
+	 <t t-foreach="expenses" t-as="expense">
 		<tr class="expense_tr" t-att-id="count" linesid="0">
 		
 			<td>
-	           	<span class="checkbox" t-att-id="expense">
-	     		 <input t-att-id="expense" t-att-title="expense" name="check" t-att-class="check" type="checkbox"/>
+	           	<span class="expense_checkbox" t-att-id="expense">
+	     		 <input t-att-id="expense.id" t-att-title="expense" name="check_box" t-att-class="check" type="checkbox"/>
 	  			</span>
            </td>
            <td class="state" name="state"><span t-field="expense.state"/></td>
@@ -298,6 +250,7 @@
 			<td class="employee_id" name="employee_id"><span t-field="expense.employee_id"/></td>
 			<td class="paid_by_emp" name="paid_by_emp"><t t-esc="paid_by_emp" /></td>
 		</tr>
+		</t>
 	</template>
  </data>
 </odoo>
