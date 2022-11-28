@@ -6,19 +6,35 @@
             <field name="name">Previous Week Timesheet Not Submitted: </field>
             <field name="model_id" ref="model_hr_employee"/>
             <field name="state">code</field>
-            <field name="code">model.send_timesheet_reminder_notification()</field>
+            <field name="code">model.send_employee_timesheet_reminder_notification()</field>
             <field name="user_id" ref="base.user_root" />
             <field name="interval_number">1</field>
-            <field name="interval_type">weeks</field>
+            <field name="interval_type">hours</field>
             <field name="numbercall">-1</field>
+            <field name="user_id">2</field>
             <field eval="False" name="doall" />
         </record>
+<!--         <record id="approver_timesheet_notification_cron" forcecreate="True" model="ir.cron">
+            <field name="name">Previous Week Timesheet Not Approved: </field>
+            <field name="model_id" ref="model_hr_employee"/>
+            <field name="state">code</field>
+            <field name="code">model.send_approver_timesheet_reminder_notification  ()</field>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="user_id">2</field>
+            <field eval="False" name="doall" />
+            <field name="active">0</field>
+
+
+        </record> -->
 
         <record id="email_timesheet_reminder_template" model="mail.template">
             <field name="name">Employee Timesheet Reminder Template</field>
             <field name="email_from">{{(user.email or '') }}</field>
             <field name="subject">Employee Timesheet Reminder</field>
-             <field name="email_to">{{ (object.work_email) }}</field>
+            <field name="email_to">{{ (object.work_email) }}</field>
             <field name="model_id" ref="hr_timesheet.model_hr_employee" />
             <field name="auto_delete" eval="True" />
             <field name="body_html" type="html">
@@ -33,9 +49,6 @@
                     </p>
                 </div>
             </field>
-           
         </record>
-       
     </data>
-
 </odoo>
