@@ -22,7 +22,7 @@ class ExpensesCustomerPortal(CustomerPortal):
     @http.route(['/my/expenses', '/my/expenses/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_expenses(self, page=1, date_begin=None, date_end=None, sortby=None, **kw):
         values = self._prepare_portal_layout_values()
-        hr_expenses = request.env['hr.expense'].sudo().search([('state', '=','draft')])
+        hr_expenses = request.env['hr.expense'].sudo().search([])
         domain = []
 
         searchbar_sortings = {
@@ -52,7 +52,7 @@ class ExpensesCustomerPortal(CustomerPortal):
         # search the count to display, according to the pager data
         expenses = hr_expenses.search(domain, order=sort_order, limit=self._items_per_page, offset=pager['offset'])
         request.session['my_expenses_history'] = expenses.ids[:100]
-        state_expense = request.env['hr.expense'].sudo().search([('state', '=','reported')])
+        state_expense = request.env['hr.expense'].sudo().search([])
         values.update({
             'date': date_begin,
             'expenses': hr_expenses,
@@ -124,12 +124,14 @@ class ExpensesCustomerPortal(CustomerPortal):
             if rec:
                 expense = request.env['hr.expense'].sudo().search(
                     [('id', '=', int(rec))])
-                expense.update({
-                'state' : 'reported'
-                })
-            values = {
-            'expense':expense,
-            'paid_by_emp':'True'
-            }
+                if expense.state=='draft':
+                    expense.update({
+                    'state' : 'reported'
+                    })
+        #filter selected row values            
+        values = {
+        'expenses':request.env['hr.expense'].sudo().search([('id','in',expense_id)]),
+        'paid_by_emp':'True'
+        }
         return request.env['ir.ui.view']._render_template(
             "awb_reimbursement_portal.submitted_expense_lines_row", values)
