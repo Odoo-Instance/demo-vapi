@@ -6,6 +6,25 @@ from odoo import fields, http, _
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
+#imports of python lib
+import xlrd
+import io
+import xlsxwriter 
+import io
+import xlsxwriter
+import json
+# imports of odoo
+from werkzeug.utils import redirect
+from odoo import fields, http, _
+from odoo.http import request
+from odoo import http
+from odoo.http import content_disposition,request 
+from odoo.addons.web.controllers.main import _serialize_exception
+from odoo.tools import html_escape
+from odoo.tools import date_utils
+from xlsxwriter.workbook import Workbook
+from odoo.http import content_disposition, request
+from odoo.tools import ustr, osutil
 
 
 class WebTimesheetRequest(http.Controller):
@@ -378,3 +397,42 @@ class WebTimesheetRequest(http.Controller):
                           ('Content-Length', len(pdf['context']))]
         print(pdfhttpheaders)
         return request.make_response(pdf['context'])
+    @http.route('/export/timesheets/records', methods=['POST'], type='http',
+                auth='user', website=True, csrf=False)
+    def export_record(self, **kw):
+        timesheet_id = kw.get('checked')
+        
+        if timesheet_id:
+            t_id = timesheet_id.split(",")
+            s =[];
+            for rec in t_id:
+                timesheet = request.env['account.analytic.line'].sudo().search(
+                    [('id', '=', int(rec))])
+                
+                date_format = str(timesheet.date)
+                
+                try:
+                    s_dict ={}
+                    s_dict['date']= date_format
+                    s_dict['employee']= timesheet.employee_id.name
+                    s_dict['project']= timesheet.project_id.name
+                    s_dict['task']= timesheet.task_id.name 
+                    s_dict['description']= timesheet.name 
+                    s_dict['hours']= timesheet.unit_amount
+                    project_type = lambda x : x if x else ''
+                    s_dict['project_type']= project_type(timesheet.project_type)
+                    activity_type  = lambda x : x if x else ''
+                    s_dict['activity_type']= activity_type(timesheet.timesheet_invoice_type)
+                    area  = lambda x : x if x else ''
+                    s_dict['platform']= area(timesheet.area)
+                    validated_status  = lambda x : x if x else ''
+                    s_dict['status']= validated_status(timesheet.validated_status)
+                   
+                    s.append(s_dict)
+                    
+                    
+                except Exception as e:
+                    se = _serialize_exception
+                 
+            return str(s) 
+

@@ -485,6 +485,15 @@
                 >
                     Submit
                 </button>
+                <!-- Export Button Added -->
+                  <button class="Export"
+
+
+                        id="Export"
+
+                >
+                    Export
+                </button>
                 <div>Hours:
                     <span id="selected_hours"
                           t-options='{"widget": "float_time"}'/>
