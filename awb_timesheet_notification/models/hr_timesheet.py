@@ -53,15 +53,15 @@ class AccountAnalyticLine(models.Model):
                 elif select_week == '2':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_2week.date()), ('date', '<=',  date_end_2week.date())])
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                                    
+         
                 elif select_week == '3':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_3week.date()), ('date', '<=',  date_end_3week.date())])
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                    
+
                 elif select_week == '4':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_4week.date()), ('date', '<=',  date_end_4week.date())])
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                    
+
                 elif select_week == '5':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
@@ -77,10 +77,10 @@ class AccountAnalyticLine(models.Model):
     def send_approver_timesheet_reminder_notification(self):
         today = fields.Date.context_today(self)
         IrConfigParameter = self.env["ir.config_parameter"].sudo()
-        day = IrConfigParameter.get_param("dayofweek")
-        send_reminder = IrConfigParameter.get_param("send_employee_reminder")
-        select_week = IrConfigParameter.get_param("select_week")
-        time = IrConfigParameter.get_param("time")
+        day = IrConfigParameter.get_param("approver_dayofweek")
+        send_reminder = IrConfigParameter.get_param("send_aprrover_reminder")
+        select_week = IrConfigParameter.get_param("approver_select_week")
+        time = IrConfigParameter.get_param("approver_time")
 
         timezone = self.env.user.tz or pytz.utc
         local_zone = pytz.timezone(timezone)
@@ -105,36 +105,33 @@ class AccountAnalyticLine(models.Model):
         minutes = float(time)*60
         hours, minutes = divmod(minutes, 60)
         time = ("%02d:%02d"%(hours,minutes))
-
         if send_reminder and  now.weekday() == int(day) and current_time == time:
-            employee_ids = self.env['hr.employee'].search([]) 
+            employee_ids = self.env['hr.employee'].search([])
             for rec in employee_ids:
-                if select_week == '1':
-                    timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_1week.date()), ('date', '<=',  date_end_1week.date())])
-                    timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
+                project_ids = self.env['project.task'].search([('user_ids', 'in', rec.user_id.id)])
+                if project_ids:
+                    for pro in project_ids:
+                        if select_week == '1':
+                            timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('project_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_1week.date()), ('date', '<=',  date_end_1week.date())])
 
-                elif select_week == '2':
-                    timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_2week.date()), ('date', '<=',  date_end_2week.date())])
-                    timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                                    
-                elif select_week == '3':
-                    timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_3week.date()), ('date', '<=',  date_end_3week.date())])
-                    timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                    
-                elif select_week == '4':
-                    timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_4week.date()), ('date', '<=',  date_end_4week.date())])
-                    timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
-                    
-                elif select_week == '5':
-                    timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
-                    timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
+                        elif select_week == '2':
+                            timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('project_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_2week.date()), ('date', '<=',  date_end_2week.date())])
+     
+                        elif select_week == '3':
+                            timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('project_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_3week.date()), ('date', '<=',  date_end_3week.date())])
 
-                if timesheet_ids:
-                    template_id = self.env.ref('awb_timesheet_notification.email_timesheet_reminder_template')
-                    template_id.send_mail(rec.id, force_send=True)
-                if not timesheet_ids1:
-                    template_id = self.env.ref('awb_timesheet_notification.email_timesheet_reminder_template')
-                    template_id.send_mail(rec.id, force_send=True)
+                        elif select_week == '4':
+                            timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('project_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_4week.date()), ('date', '<=',  date_end_4week.date())])
+
+                        elif select_week == '5':
+                            timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('project_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
+
+                        if timesheet_ids:
+                            template_id = self.env.ref('awb_timesheet_notification.email_approver_timesheet_reminder_template')
+                            template_id.send_mail(rec.id, force_send=True)
+                # if not timesheet_ids1:
+                #     template_id = self.env.ref('awb_timesheet_notification.email_timesheet_reminder_template')
+                #     template_id.send_mail(rec.id, force_send=True)
 
 
 class AccountAnalyticLine(models.Model):

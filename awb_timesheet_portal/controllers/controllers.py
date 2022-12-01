@@ -352,7 +352,7 @@ class WebTimesheetRequest(http.Controller):
 
     @http.route('/check/update/date/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
-    def check_date_record(self, **kw):
+    def check_update_date_record(self, **kw):
         timesheet_result = ""
         employee = request.env['hr.employee'].sudo().search(
             [('user_id', '=', request.env.user.id)])
@@ -414,7 +414,7 @@ class WebTimesheetRequest(http.Controller):
                           ('Content-Length', len(pdf['context']))]
         print(pdfhttpheaders)
         return request.make_response(pdf['context'])
-    
+
     @http.route('/export/timesheets/records', methods=['POST'], type='http',
                 auth='user', website=True, csrf=False)
     def export_record(self, **kw):
