@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import http, _
-from odoo.http import request
-
+from odoo.addons.portal.controllers import portal
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
+from odoo.http import request
+from werkzeug.utils import redirect
 
 
-class ExpensesCustomerPortal(CustomerPortal):
-    def _expenses_home_portal_values(self):
-        values = super(ExpensesCustomerPortal, self)._prepare_portal_layout_values()
-        values['expenses_count'] = request.env['hr.expense'].sudo().search_count([])
-        return values
-    
+class CustomerPortal(portal.CustomerPortal):
+    # count for expenses table records
+    def _prepare_home_portal_values(self, counters):
+        values = super(CustomerPortal, self)._prepare_home_portal_values(counters)
+        if 'expenses_count' in counters:
+            values['expenses_count'] = request.env['hr.expense'].sudo().search_count([
+            ])
+        return values    
     def _get_searchbar_inputs(self):
         return {
             'all': {'input': 'all', 'label': _('Search in All')},
@@ -24,7 +27,8 @@ class ExpensesCustomerPortal(CustomerPortal):
         values = self._prepare_portal_layout_values()
         hr_expenses = request.env['hr.expense'].sudo().search([])
         domain = []
-
+        expenses = request.env['hr.expense']
+        expenses_sudo = expenses.sudo()
         searchbar_sortings = {
             'date': {'label': _('Date'), 'order': 'create_date desc'},
             'name': {'label': _('Reference'), 'order': 'name'},
@@ -40,12 +44,12 @@ class ExpensesCustomerPortal(CustomerPortal):
             domain += [('create_date', '>', date_begin), ('create_date', '<=', date_end)]
 
         # count for pager
-        expense_count = hr_expenses.search_count(domain)
+        expenses_count = expenses_sudo.search_count(domain)
         # make pager
         pager = portal_pager(
             url="/my/expenses",
             url_args={'date_begin': date_begin, 'date_end': date_end, 'sortby': sortby},
-            total=expense_count,
+            total=expenses_count,
             page=page,
             step=self._items_per_page
         )
@@ -57,7 +61,7 @@ class ExpensesCustomerPortal(CustomerPortal):
             'date': date_begin,
             'expenses': hr_expenses,
             'state_expenses': state_expense,
-            'page_name': 'submit',
+            'page_name': 'expenses',
             'pager': pager,
             'default_url': '/my/expenses',
             'searchbar_sortings': searchbar_sortings,
@@ -87,34 +91,29 @@ class ExpensesCustomerPortal(CustomerPortal):
                   'paid_of_employee': kw.get('paid_of_employee'),
                 }
 
-        return request.env['ir.ui.view']._render_template("awb_reimbursement_portal.expense_line_popup",
+        return request.env['ir.ui.view']._render_template("awb_reimbursement_portal.portal_layout",
                                                          values)
-    @http.route(['/new/row/expense_lines'], type='json', auth="public",
-                methods=['POST'], website=True)
-    def new_row_expenselines(self, **kw):
-        """ Render the new expense line row template """
         
-        expenses_id = request.env['hr.expense'].create({
-            'name':kw.get('description'),
-            'product_id':int(kw.get('product')),
-            'total_amount': kw.get('total'),
-            #'tax_ids': kw.get('taxes'),
-            'reference': kw.get('bill_reference'),
-             'date': kw.get('expense_date'),
-             'account_id': int(kw.get('account')) if kw.get('account') else False,
-             'analytic_account_id': int(kw.get('analytic_account')) if kw.get('analytic_account') else False,
-             #'analytic_tag_ids': anylytic_tag.id,
-             'employee_id': int(kw.get('employee')) if kw.get('employee') else False, 
-             'unit_amount':0.0,
-            })
-        
+    @http.route('/new/row/expense_lines', method='post', type='http', auth='public',
+                website=True, csrf=False)
+    def new_row_expenselines(self, **post):
+        """ Render the New line row template """
         values = {
-            'expense':expenses_id,
-            'paid_by_emp':'True'
+            'name':post['description'],
+            'product_id':1,
+            'total_amount': post['total'],
+            'tax_ids': [(6, 0, [int(post['taxes'])])] if post['taxes'] else False,
+            'reference': post['bill_reference'],
+            'date': post['date'],
+            'account_id':int(post['account']) if post['account'] else False,
+            'analytic_account_id': int(post['analytic_act']) if post['analytic_act'] else False,
+            'analytic_tag_ids': [(6, 0, [int(post['analytic_tag'])])] if post['analytic_tag'] else False,
+            'employee_id': int(post['employee']) if post['employee'] else False,
+            'unit_amount':0.0,
             }
-        return request.env['ir.ui.view']._render_template(
-            "awb_reimbursement_portal.new_expense_lines_row", values)
-        
+        req = request.env['hr.expense'].sudo().create(values)
+        return redirect('/my/expenses')
+    
     @http.route('/submit/expenses', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
     def submit_expesnses(self, **kw):
@@ -135,3 +134,43 @@ class ExpensesCustomerPortal(CustomerPortal):
         }
         return request.env['ir.ui.view']._render_template(
             "awb_reimbursement_portal.submitted_expense_lines_row", values)
+        
+    @http.route('/create/expenses/records', methods=['POST'], type='json',
+                auth='user', website=True, csrf=False)
+    def request(self):
+        """ Render the submit line row values """
+        hr_expenses = request.env['product.product'].sudo().search([])
+        account_tax = request.env['account.tax'].sudo().search([])
+        account = request.env['account.account'].sudo().search([])
+        employee = request.env['hr.employee'].sudo().search([])
+        analytic_act = request.env['account.analytic.account'].sudo().search([])
+        analytic_tag = request.env['account.analytic.tag'].sudo().search([])
+        product_dict = []
+        taxes_dict = []
+        account_dict = []
+        employee_dict = []
+        analytic_act_dict = []
+        analytic_tag_dict = []
+        for rec in hr_expenses:
+            product_dict.append({'id': rec.id, 'name': rec.name})
+        for account in account_tax:
+            taxes_dict.append({'id': account.id, 'name': account.name})
+        for act in account:
+            account_dict.append({'id': act.id, 'name': act.name})
+        for emp in employee:
+            employee_dict.append({'id': emp.id, 'name': emp.name})
+        for analytic in analytic_act:
+            analytic_act_dict.append({'id': analytic.id, 'name': analytic.name})
+        for tag in analytic_tag:
+            analytic_tag_dict.append({'id': tag.id, 'name': tag.name})
+        res = {
+            'product': product_dict,
+            'taxes': taxes_dict,
+            'account': account_dict,
+            'employee': employee_dict,
+            'analytic_act': analytic_act_dict,
+            'analytic_tag': analytic_tag_dict,
+            
+        }
+        return res
+    
