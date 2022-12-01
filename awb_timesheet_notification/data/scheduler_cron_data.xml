@@ -31,7 +31,7 @@
         <!-- Employee Timesheet Template -->
         <record id="email_timesheet_reminder_template" model="mail.template">
             <field name="name">Employee Timesheet Reminder Template</field>
-            <field name="email_from">{{(user.email or '') }}</field>
+            <field name="email_from">noreply.odoov14.gmail.com</field>
             <field name="subject">Employee Timesheet Reminder</field>
             <field name="email_to">{{ (object.work_email) }}</field>
             <field name="model_id" ref="hr_timesheet.model_hr_employee" />
@@ -52,7 +52,7 @@
         <!-- Approver Timesheet Template -->
         <record id="email_approver_timesheet_reminder_template" model="mail.template">
             <field name="name">Approver Timesheet Reminder Template</field>
-            <field name="email_from">{{(user.email or '') }}</field>
+            <field name="email_from">noreply.odoov14.gmail.com</field>
             <field name="subject">Approver Timesheet Reminder</field>
             <field name="email_to">{{ (object.work_email) }}</field>
             <field name="model_id" ref="hr_timesheet.model_hr_employee" />
