@@ -378,12 +378,29 @@ class WebTimesheetRequest(http.Controller):
     def total_time(self, **kw):
         timesheet = kw.get('checked')
         total_hours = 0
-        for timesheet in timesheet:
+        new_hour = 0
+        result = ""
+        check_id = 0
+        first_timesheet_id = request.env['account.analytic.line'].sudo().search(
+            [('id', '=', int(timesheet[-1]))])
+        date = first_timesheet_id.date
+        start = date_utils.start_of(date, "week")
+        end = date_utils.end_of(date, 'week')
+        for rec in timesheet:
             timesheet_id = request.env['account.analytic.line'].sudo().search(
-                [('id', '=', int(timesheet))])
+                [('id', '=', int(rec))])
             total_hours += int(timesheet_id.unit_amount)
+            if int(timesheet[-1]) != int(rec):
+                if not start <= timesheet_id.date <= end:
+                    result = "false"
+                    check_id = timesheet_id.id
+                    total_hours = total_hours - int(timesheet_id.unit_amount)
+                    new_hour = int(timesheet_id.unit_amount)
         res = {
-            'total': total_hours
+            'total': total_hours,
+            'result': result,
+            'check_id': check_id,
+            'new_hour': new_hour
         }
         return res
 

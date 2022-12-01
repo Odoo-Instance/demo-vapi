@@ -398,8 +398,7 @@
         <xpath expr="//tbody/t/tr/td" position="before">
             <div id="checkboxes">
                 <td id='total_hours' class="total_hours">
-                    <span class="checkbox"
-                          t-att-id="timesheet.id">
+                    <span class="checkbox">
                         <input t-att-id="timesheet.id"
                                t-att-title="timesheet.validated_status"
                                name="check" type="checkbox"/>
