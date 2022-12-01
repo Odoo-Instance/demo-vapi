@@ -141,7 +141,7 @@ class CustomerPortal(portal.CustomerPortal):
         """ Render the submit line row values """
         hr_expenses = request.env['product.product'].sudo().search([])
         account_tax = request.env['account.tax'].sudo().search([])
-        account = request.env['account.account'].sudo().search([])
+        account_account = request.env['account.account'].sudo().search([])
         employee = request.env['hr.employee'].sudo().search([])
         analytic_act = request.env['account.analytic.account'].sudo().search([])
         analytic_tag = request.env['account.analytic.tag'].sudo().search([])
@@ -155,7 +155,7 @@ class CustomerPortal(portal.CustomerPortal):
             product_dict.append({'id': rec.id, 'name': rec.name})
         for account in account_tax:
             taxes_dict.append({'id': account.id, 'name': account.name})
-        for act in account:
+        for act in account_account:
             account_dict.append({'id': act.id, 'name': act.name})
         for emp in employee:
             employee_dict.append({'id': emp.id, 'name': emp.name})
