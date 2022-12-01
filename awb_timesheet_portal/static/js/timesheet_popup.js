@@ -113,25 +113,38 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 			});
 	});
 
-	$(".checkbox").click(function(){
+    $(".checkbox").click(function(){
 		var total = 0
 		var checkboxes = document.getElementsByName('check');
 		var checkboxesChecked = [];
 		for (var i = 0; i < checkboxes.length; i++) {
 			if (checkboxes[i].checked) {
 			checkboxesChecked.push(checkboxes[i].id);
-//				var $item = $(this).closest("tr")
-//				var value = parseFloat($item[0].cells[6].textContent)
 			}
-//            total = parseFloat(total) + parseFloat($item[0].cells[6].textContent)
 		}
 		ajax.jsonRpc("/time/total", 'call', {
 			'checked': checkboxesChecked
 		}).then(function(result) {
 			document.getElementById("selected_hours").innerHTML = result['total']
-		});
+			if (result['result'] == 'false'){
+			let user_input = confirm("Timesheet selection crosses another week,Do you want to continue?");
+			console.log('input',user_input)
+			if (user_input == true){
+			for (var i = 0; i < checkboxesChecked.length; i++) {
+			document.getElementById(checkboxesChecked[i]).checked = false;
+			}
 
+			document.getElementById(result['check_id']).checked = true;
+			document.getElementById("selected_hours").innerHTML = result['new_hour']
+			}
+			else{
+			console.log('check',document.getElementById(result['check_id']))
+            document.getElementById(result['check_id']).checked = false;
+			}
+			}
+		});
 	});
+
 
 	$('.button_class').on('click', '.approve', function() {
 		var checkboxes = document.getElementsByName('check');
