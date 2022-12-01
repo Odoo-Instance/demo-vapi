@@ -3,7 +3,7 @@
 {
     'name': """AWB Reimbursement Portal""",
     'summary': '''AWB Reimbursement Portal User''',
-    'version': '15.0.1.0.2',
+    'version': '15.0.1.0.4',
     'category': 'Website',
     'website': "http://www.achievewithoutborders.com",
     'author': 'Achieve Without Borders, Inc',

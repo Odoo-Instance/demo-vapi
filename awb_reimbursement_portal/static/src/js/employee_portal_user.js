@@ -1,97 +1,89 @@
 odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) {
+	'use strict';
 	var ajax = require('web.ajax');
-	var core = require('web.core');
-	var Widget = require('web.Widget');
-	var publicWidget = require('web.public.widget');
-	
-/*Declare click and onchange action method*/
-	var ExpensesDetailsForm = Widget.extend({
-		events: {
-			'click .expense_line_submit': '_onSubmit_line',
-			'click .expense_checkbox': '_onClickCheckbox',
-	    },
-	    start: function () {
-	        var self = this;
-	        var res = this._super.apply(this.arguments).then(function () {
-            $('.expense_line_plus')
-	        	.off('click')
-	                .click(function (ev) {
-	                    self.on_click(ev);
-	                });
-	        });
-	        return res;
-	    },
-	    on_click: function (ev) {
-	    	ev.preventDefault();
-	    	var self = this;
-	    	var post = {};
-	    	var $form = $('.expense_lines_panel');
-	    	self.expense_line_popup_form(post, $form);
-	    },
-	    /*** Start Add Expenses Lines  ***/
-	    expense_line_popup_form: function(post, $form){
-		   	 ajax.jsonRpc('/expense_lines/creation', 'call', post).then(function (modal) { 
-						var $modal = $(modal);			
-						$modal.appendTo($form).modal();	
-						$modal.on('click', '.warning', function(ev){
-							$(this).removeClass('warning');
-						});
-						// Save action
-						$modal.on('click', '#expense_line_save', function(ev){
-							function check_demo_mandatory(){
-								 var toproceed=true;	
-								 $('.expense_line_popup_form').find('.required').each(function(){
-									 if ($(this).val() == 0) {
-										 $(this).addClass('required_style');
-										 toproceed=false;
-									 } else {
-										$(this).removeClass('required_style');
-									 }
-									 })
-									 return toproceed;
-							}
-							ev.preventDefault();
-						    	var proceed = check_demo_mandatory();
-						    	var error=false;
-							var crow = $('.expense_lines_ids tbody tr').length;
-							post = {}
-							if (!proceed) {
-						   ev.preventDefault();
-						   return false;
-					    	}
-							var checkBox = document.getElementById("paid_of_employee");
-							if (checkBox.checked == true)
-							{
-								post['paid_employee'] == 'true'
-							}
-							else{
-								post['paid_employee'] == 'false'
-							}
-							post['count'] = crow
-					    	$(".form-control").each(function(){
-							      post[$(this).attr('name')] = $(this).val()
-					    	});
-							
-								ajax.jsonRpc('/new/row/expense_lines', 'call', post).then(function (modal) { 
-									$('.expense_lines_ids tr#empty_lines').before(modal);
-				  		    	});
-							
-				  		    	$modal.empty();
-				  				$modal.modal('hide');
-				  				$('.expense_line_popup_form').remove();
-						});
-						
-						//close action
-			   		    $modal.on('click', '#expense_line_close', function(ev){
-			   		    	$modal.empty();
-					    	$modal.modal('hide');
-					    	$('.expense_line_popup_form').remove();
-			   		    });
-					});
-	    },
-	    /*** Submit button action  ***/
-	    _onSubmit_line:function(ev){
-	    	var checkboxes = document.getElementsByName('check_box');
+	// Check box action
+	$(document).ready(function() {
+		var $submit = $(".submit_class").hide()
+			var $cbs = $('input[name="check_box"]').click(function() {
+				$submit.toggle($cbs.is(":checked"))
+			});
+	});
+	// Create button action
+	$(document).ready(function() {
+		$('#mydiv_expense').on('click', '.my_div_expense', function() {
+//			Clear Form
+			$('#product').find('option').remove().end().append('<option value=""></option>');
+			$('#taxes').find('option').remove().end().append('<option value=""></option>');
+			ajax.jsonRpc("/create/expenses/records", 'call', {
+
+			}).then(function(result) {
+				var product = result['product']
+				var ProductSelect = document.getElementById('product');
+				for (let i = 0; i < product.length; i++) {
+					var item = document.createElement('option');
+					item.text = product[i].name
+					item.id = product[i].id
+					item.value = product[i].id
+					ProductSelect.appendChild(item);
+				}
+				var taxes = result['taxes']
+				var TaxesSelect = document.getElementById('taxes');
+				for (let i = 0; i < taxes.length; i++) {
+					var item = document.createElement('option');
+					item.text = taxes[i].name
+					item.id = taxes[i].id
+					item.value = taxes[i].id
+					TaxesSelect.appendChild(item);
+				}
+				var account = result['account']
+				var AccountSelect = document.getElementById('account');
+				for (let i = 0; i < account.length; i++) {
+					var item = document.createElement('option');
+					item.text = account[i].name
+					item.id = account[i].id
+					item.value = account[i].id
+					AccountSelect.appendChild(item);
+				}
+				var employee = result['employee']
+				var EmployeeSelect = document.getElementById('employee');
+				for (let i = 0; i < employee.length; i++) {
+					var item = document.createElement('option');
+					item.text = employee[i].name
+					item.id = employee[i].id
+					item.value = employee[i].id
+					EmployeeSelect.appendChild(item);
+				}
+				var analytic_act = result['analytic_act']
+				var AnalyticSelect = document.getElementById('analytic_act');
+				for (let i = 0; i < analytic_act.length; i++) {
+					var item = document.createElement('option');
+					item.text = analytic_act[i].name
+					item.id = analytic_act[i].id
+					item.value = analytic_act[i].id
+					AnalyticSelect.appendChild(item);
+				}
+				var analytic_tag = result['analytic_tag']
+				var AnalyticTagSelect = document.getElementById('analytic_tag');
+				for (let i = 0; i < analytic_tag.length; i++) {
+					var item = document.createElement('option');
+					item.text = analytic_tag[i].name
+					item.id = analytic_tag[i].id
+					item.value = analytic_tag[i].id
+					AnalyticTagSelect.appendChild(item);
+				}
+
+				$("#date_start").datepicker({
+					changeMonth: true,
+					changeYear: true,
+					dateFormat: "yy-mm-dd"
+				});
+				
+			});
+
+		});
+		// Submit button action
+		$('.submit_class').on('click', function(){
+			var checkboxes = document.getElementsByName('check_box');
 	    	var checkboxesChecked = [];
 	    	  for (var i=0; i<checkboxes.length; i++) {
 	    	     if (checkboxes[i].checked) {
@@ -101,30 +93,10 @@ odoo.define('awb_reimbursement_portal.employee_portal_user', function (require) 
 	    	  $('input:checked').not('.all').parents("tr").remove();
 	    	 ajax.jsonRpc("/submit/expenses", 'call',{'checked':checkboxesChecked}).then(function(modal){
 	    		 $('.expense_lines_ids tr#empty_lines').before(modal);
-	    		  });
-	    },
-	    /*** Checkbox click action  ***/
-	    _onClickCheckbox:function(){
-	    	var button = document.getElementById("submit");
-	    	  button.style.display = "block";
-	    }
-	    
-	});
-
-	publicWidget.registry.ExpensesDetailsForm = publicWidget.Widget.extend({
-	    selector: '.div_expenses_forms',
-
-	    start: function () {
-	        var def = this._super.apply(this, arguments);
-	        this.instance = new ExpensesDetailsForm(this);
-	        return Promise.all([def, this.instance.attachTo(this.$el)]);
-	    },
-	   
-	    destroy: function () {
-	        this.instance.setElement(null);
-	        this._super.apply(this, arguments);
-	        this.instance.setElement(this.$el);
-	    },
-	});
-	return ExpensesDetailsForm;
+	    		  }).then(function(modal) {
+	    				window.location.reload();
+	    			});
+		});
+	});	
+	
 });
