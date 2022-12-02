@@ -157,7 +157,9 @@ class WebTimesheetRequest(http.Controller):
              ('validated_status', '!=', 'rejected')])
         if not timesheet:
             req = request.env['account.analytic.line'].sudo().create(values)
-            return redirect('/my/timesheets')
+            #filter by current url value
+            filter_by = post['url']
+            return redirect('/my/timesheets'+filter_by)
 
     @http.route('/edit/request', method='post', type='http',
                 auth='public',
@@ -248,31 +250,25 @@ class WebTimesheetRequest(http.Controller):
                 auth='user', website=True, csrf=False)
     def submit_record(self, **kw):
         timesheet_id = kw.get('checked')
-        print(timesheet_id)
         total_hours = 0
         result = ""
         for rec in timesheet_id:
             timesheet = request.env['account.analytic.line'].sudo().search(
                 [('id', '=', int(rec))])
-            print(timesheet)
             if timesheet.validated_status == "draft":
                 total_hours += int(timesheet.unit_amount)
-                print(total_hours)
 
         if total_hours >= 40:
             for obj in timesheet_id:
                 timesheet = request.env['account.analytic.line'].sudo().search(
                     [('id', '=', int(obj))])
-                print(timesheet)
                 timesheet.write(
                     {'submitted': True, 'validated_status': 'submit'})
-                print('timesheet')
             result = "true"
 
         else:
             result = "false"
         res = {'result': result}
-        print(result)
         return res
 
     @http.route('/usecheck/records', methods=['POST'], type='json',
@@ -298,7 +294,6 @@ class WebTimesheetRequest(http.Controller):
         timesheet_id = kw.get('checked')
         timesheet = request.env['account.analytic.line'].sudo().search(
             [('id', '=', int(timesheet_id[0]))])
-        print(timesheet)
         for record in timesheet:
             timesheet_dict.append({'id': record.id, 'name': record.name,
                                    'date': record.date,
@@ -339,7 +334,6 @@ class WebTimesheetRequest(http.Controller):
         timesheet = request.env['account.analytic.line'].sudo().search(
             [('date', '=', timesheet_date), ('employee_id', '=', employee.id),
              ('validated_status', '!=', 'rejected')])
-        print(timesheet)
         if timesheet:
             timesheet_result = "true"
         else:
@@ -362,7 +356,6 @@ class WebTimesheetRequest(http.Controller):
             [('date', '=', timesheet_date), ('employee_id', '=', employee.id),
              ('validated_status', '!=', 'rejected'),
              ('id', '!=', int(timesheet_id))])
-        print(timesheet)
         if timesheet:
             timesheet_result = "true"
         else:
@@ -409,10 +402,8 @@ class WebTimesheetRequest(http.Controller):
                 website=True, csrf=False)
     def create_pdf_request(self, **post):
         pdf = request.env['account.analytic.line'].sudo().create_pdf()
-        print(pdf)
         pdfhttpheaders = [('Content-Type', 'application/pdf'),
                           ('Content-Length', len(pdf['context']))]
-        print(pdfhttpheaders)
         return request.make_response(pdf['context'])
 
     @http.route('/export/timesheets/records', methods=['POST'], type='http',

@@ -36,9 +36,13 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 			$('#activity').find('option').remove().end().append('<option value=""></option>');
 			$('#project_type').find('option').remove().end().append('<option value=""></option>');
 			$('#client').find('option').remove().end().append('<option value=""></option>');
+			
 			ajax.jsonRpc("/create/timesheets/records", 'call', {
 
 			}).then(function(result) {
+				//Get Current url value
+				var current_url = window.location.search;
+				$('#url').val(current_url)
 				var employee = result['employee_rec']
 				$('#employee-name').val(employee.name)
 				$('#employee-id').val(employee.id)

@@ -51,12 +51,11 @@ class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
         searchbar_sortings = super()._get_searchbar_sortings()
         searchbar_sortings.update(
             status={'label': _('Status'), 'order': 'validated_status'})
-        print(searchbar_sortings)
         return searchbar_sortings
 
     @http.route(['/my/timesheets', '/my/timesheets/page/<int:page>'],
                 type='http', auth="user", website=True)
-    def portal_my_timesheets(self, page=1, sortby=None, filterby='status',
+    def portal_my_timesheets(self, page=1, sortby=None, filterby=None,
                              search=None, search_in='status', groupby='status',
                              **kw):
         Timesheet = request.env['account.analytic.line']
@@ -111,10 +110,11 @@ class PortalTimesheetCustomerPortal(TimesheetCustomerPortal):
         order = searchbar_sortings[sortby]['order']
         # default filter by value
         if not filterby:
-            if not request.env.user.employee_count:
-                filterby = 'status'
-            else:
-                filterby = 'all'
+            #--------------------------- if not request.env.user.employee_count:
+                #---------------------------------------------- filterby = 'all'
+            #------------------------------------------------------------- else:
+            # Added default filter by this week value
+            filterby = 'week'
         domain = AND([domain, searchbar_filters[filterby]['domain']])
 
         if search and search_in:
