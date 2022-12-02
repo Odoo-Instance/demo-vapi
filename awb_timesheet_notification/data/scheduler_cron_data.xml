@@ -30,8 +30,8 @@
         </record>
 
         <!-- Cron for Approver Employee Reminder -->
-        <record id="approver_timesheet_notification_cron" forcecreate="True" model="ir.cron">
-            <field name="name">Previous Week Timesheet Missed: </field>
+        <record id="approver_employee_timesheet_notification_cron" forcecreate="True" model="ir.cron">
+            <field name="name">Employee Previous Week Timesheet Missed: </field>
             <field name="model_id" ref="model_hr_employee"/>
             <field name="state">code</field>
             <field name="code">model.send_approver_employee_timesheet_reminder_notification()</field>
