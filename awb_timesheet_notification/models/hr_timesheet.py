@@ -188,19 +188,19 @@ class AccountAnalyticLine(models.Model):
 
 
 
-class AccountAnalyticLine(models.Model):
-    _inherit = "account.analytic.line"
+# class AccountAnalyticLine(models.Model):
+#     _inherit = "account.analytic.line"
 
     
-    @api.model_create_multi
-    def create(self, vals_list):
-        # OVERRIDE
+#     @api.model_create_multi
+#     def create(self, vals_list):
+#         # OVERRIDE
 
 
-        res = super(AccountAnalyticLine, self).create(vals_list)
-        self.env['timesheet.weekly.details'].create({'analytic_account_line_id': res.id, 'is_timesheet': True, 'name': res.employee_id.name})
+#         res = super(AccountAnalyticLine, self).create(vals_list)
+#         self.env['timesheet.weekly.details'].create({'analytic_account_line_id': res.id, 'is_timesheet': True, 'name': res.employee_id.name})
 
-        return res
+#         return res
 
 
 class TimesheetWeeklyDetails(models.Model):
