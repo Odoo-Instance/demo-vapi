@@ -11,6 +11,11 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 	var _t = core._t;
 
 	$(document).ready(function() {
+		// Added class name
+		var current_url = window.location;
+		if (current_url.pathname == '/my/timesheets'){
+			self.$('.mb64').addClass('timesheet_width');
+			}
 		$("table tr.thead-light th:nth-child(2)").attr('colspan', 8);
 
 		ajax.jsonRpc("/usecheck/records", 'call', {
@@ -264,7 +269,7 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 			document.getElementById("timesheet_id").value = result['timesheet'][0].id;
 			document.getElementById("date").value = result['timesheet'][0].date;
 			document.getElementById("hours").value = result['timesheet'][0].hours;
-
+			
 
 		});
 	});
