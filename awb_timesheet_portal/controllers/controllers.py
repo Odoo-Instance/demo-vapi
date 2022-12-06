@@ -322,7 +322,10 @@ class WebTimesheetRequest(http.Controller):
             [('id', '=', id)])
         if req.validated_status != 'validated':
             req.update(values)
-        return redirect('/my/timesheets')
+        # Get current url value
+        link_val = request.httprequest.__dict__
+        http_refer = link_val['environ']['HTTP_REFERER']
+        return redirect(http_refer)
 
     @http.route('/check/date/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
