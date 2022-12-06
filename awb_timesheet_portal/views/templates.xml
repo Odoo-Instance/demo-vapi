@@ -271,6 +271,12 @@
                                            class="form-control o_website_form_input"
                                            name="hours"/>
                                 </div>
+                                <div class="col-6">
+                                    <input type="hidden"
+                                           class="form-control o_website_form_input"
+                                           name="url_name" id="url_name"
+                                           autocomplete="off"/>
+                                </div>
                             </div>
                             <div style="padding-top:20px"
                                  class="form-group row form-field">

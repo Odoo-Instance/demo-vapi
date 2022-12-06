@@ -269,7 +269,9 @@ odoo.define('awb_hr_timesheet.timesheet', function(require) {
 			document.getElementById("timesheet_id").value = result['timesheet'][0].id;
 			document.getElementById("date").value = result['timesheet'][0].date;
 			document.getElementById("hours").value = result['timesheet'][0].hours;
-			
+			//Get Current url value
+			var currentUrl = window.location.search;
+			$('#url_name').val(currentUrl)
 
 		});
 	});
