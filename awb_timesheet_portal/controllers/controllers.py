@@ -180,7 +180,9 @@ class WebTimesheetRequest(http.Controller):
              ('employee_id', '=', req.employee_id.id)])
         if not timesheet:
             req.update(values)
-            return redirect('/my/timesheets')
+            #filter by current url value
+            filter_by = post['url_name']
+            return redirect('/my/timesheets'+filter_by)
 
     @http.route('/approve/timesheets/records', methods=['POST'], type='json',
                 auth='user', website=True, csrf=False)
