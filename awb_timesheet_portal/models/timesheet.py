@@ -21,7 +21,9 @@ class hr_timesheet(models.Model):
         [('Outsystem', 'Outsystem'), ('Appia', 'Appia'), ('UI/UX', 'UI/UX'),
          ('Not_Applicable', 'Not Applicable'), ])
     project_type = fields.Char()
-
+    #Added text field
+    approver_notes = fields.Char('Approver Notes')
+    
     @api.depends('validated', 'rejected', 'submitted', 'client_approval')
     def _compute_validated_status(self):
         for line in self:

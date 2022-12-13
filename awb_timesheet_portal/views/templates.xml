@@ -194,7 +194,7 @@
                                                    name="notes"
                                                    autocomplete="off"/>
                                         </div>
-                                    </div>
+                                       </div>
                                     <!-- Save current url value -->
                                     <div class="row">
                                         <div class="col-6">
@@ -309,7 +309,7 @@
                                        name="timesheet" style="display:none;"/>
                                 <label class="col-md-3 col-sm-4 control-label"
                                        style="white-space: nowrap;" for="name">
-                                    Reject Reason
+                                    Approver Notes
                                 </label>
                                 <div class="col-12">
                                     <input type="text" id="name"
@@ -339,7 +339,7 @@
         <xpath expr="//thead/tr[contains(@t-attf-class, 'thead-light')]"
                position="inside">
             <t t-elif="groupby == 'status'">
-                <th colspan="5">
+                <th colspan="6">
                     <em class="font-weight-normal text-muted">Timesheets for
                     </em>
                     <span t-field="timesheets[0].validated_status"/>
@@ -401,6 +401,9 @@
                 Project Type
             </th>
             <th>
+            	Approver Notes
+            </th>
+            <th>
                 Activity Type
             </th>
             <th>
@@ -424,6 +427,10 @@
         <xpath expr="//tbody/t/tr" position="inside">
             <td>
                 <span t-esc="timesheet.project_type"
+                      t-att-title="timesheet.id"/>
+            </td>
+            <td>
+            	<span t-esc="timesheet.approver_notes"
                       t-att-title="timesheet.id"/>
             </td>
             <td>
