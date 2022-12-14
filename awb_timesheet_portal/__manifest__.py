@@ -6,7 +6,7 @@
 ##############################################################################
 {
     'name': 'AWB Timesheet Portal',
-    'version': '15.0.1.0.3',
+    'version': '15.0.1.0.4',
     'author': "Achieve Without Borders, Inc.",
     'website': "https://www.achievewithoutborders.com/",
     'description': """ Description Text """,
@@ -15,7 +15,7 @@
     'license': 'LGPL-3',
     'data': [
         'views/templates.xml',
-        
+        'views/hr_timesheet.xml',
     ],
     'assets': {
         'web.assets_frontend': [

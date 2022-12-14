@@ -94,8 +94,6 @@ class WebTimesheetRequest(http.Controller):
         project_collaberator = request.env[
             'project.collaborator'].sudo().search(
             [('partner_id', '=', request.env.user.partner_id.id)])
-        # print(project.collaborator_ids.partner_id)
-        # print(request.env.user.partner_id.id)
         tag_id = request.env['project.tags'].sudo().search([])
         employee_dict = []
         employee_rec = {}
@@ -314,16 +312,16 @@ class WebTimesheetRequest(http.Controller):
     def update_reject_record(self, **post):
         id = int(post['timesheet'])
         values = {
-
-            'name': post['name'],
+            #'name': post['name'],
+            'approver_notes': post['name'],
             'validated_status': 'rejected',
             'submitted': False,
             'rejected': True
         }
         req = request.env['account.analytic.line'].sudo().search(
             [('id', '=', id)])
-        if req.validated_status != 'validated':
-            req.update(values)
+        #if req.validated_status != 'validated':
+        req.update(values)
         # Get current url value
         link_val = request.httprequest.__dict__
         http_refer = link_val['environ']['HTTP_REFERER']
