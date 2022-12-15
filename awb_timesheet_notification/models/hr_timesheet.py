@@ -9,7 +9,7 @@ import pytz
 class AccountAnalyticLine(models.Model):
     _inherit = "hr.employee"
     
-    
+    ''' Send Mail To Employee'''
     @api.model
     def send_employee_timesheet_reminder_notification(self):
         today = fields.Date.context_today(self)
@@ -48,6 +48,7 @@ class AccountAnalyticLine(models.Model):
             for rec in employee_ids:
                 if select_week == '1':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_1week.date()), ('date', '<=',  date_end_1week.date())])
+                    print('Timesheet\n\n',timesheet_ids)
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
 
                 elif select_week == '2':
@@ -65,14 +66,20 @@ class AccountAnalyticLine(models.Model):
                 elif select_week == '5':
                     timesheet_ids = self.env['account.analytic.line'].search([('employee_id', '=', rec.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
                     timesheet_ids1 = self.env['account.analytic.line'].search([('employee_id', '=', rec.id)])
+                template_id =  self.env['ir.model.data']._xmlid_to_res_id('awb_timesheet_notification.email_timesheet_reminder_template')
+                template_browse = self.env['mail.template'].browse(template_id)
+                if template_browse and timesheet_ids:
+                    values = template_browse.generate_email(timesheet_ids[0].employee_id.id, ['subject', 'body_html', 'email_from', 'email_to'])
+                    values['subject'] = "Employee Timesheet Reminder"
+                    # values['email_from'] = self.env['res.users'].browse(self.env['res.users']._context['uid']).partner_id.email
+                    msg_id = self.env['mail.mail'].create({
+                        'body_html': values['body_html'],
+                        'subject':values['subject'],
+                        'email_to':timesheet_ids[0].employee_id.work_email,})
+                    if msg_id:
+                        msg_id.send()
 
-                if timesheet_ids:
-                    template_id = self.env.ref('awb_timesheet_notification.email_timesheet_reminder_template')
-                    template_id.send_mail(rec.id, force_send=True)
-                if not timesheet_ids1:
-                    template_id = self.env.ref('awb_timesheet_notification.email_timesheet_reminder_template')
-                    template_id.send_mail(rec.id, force_send=True)
-
+    ''' Send Email To Approver Regarding Submitted Timesheet '''
     @api.model
     def send_approver_timesheet_reminder_notification(self):
         today = fields.Date.context_today(self)
@@ -123,13 +130,23 @@ class AccountAnalyticLine(models.Model):
                         timesheet_ids = self.env['account.analytic.line'].search([('task_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_4week.date()), ('date', '<=',  date_end_4week.date())])
 
                     elif select_week == '5':
-                        timesheet_ids = self.env['account.analytic.line'].search([('task_id', '=', pro.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
+                        timesheet_ids = self.env['account.analytic.line'].search([('task_id', '=', pro.id), ('validated_status', '=', 'submit'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
                        
-                    if timesheet_ids:
-                        template_id = self.env.ref('awb_timesheet_notification.email_approver_timesheet_reminder_template')
-                        template_id.send_mail(timesheet_ids[0].project_id.user_id.id, force_send=True)
+                    # if any(timesheet.validated_status == "submit" for timesheet in timesheet_ids):
+                    template_id =  self.env['ir.model.data']._xmlid_to_res_id('awb_timesheet_notification.email_approver_timesheet_reminder_template')
+                    template_browse = self.env['mail.template'].browse(template_id)
+                    if template_browse and timesheet_ids:
+                        values = template_browse.generate_email(timesheet_ids[0].project_id.user_id.id, ['subject', 'body_html', 'email_from', 'email_to'])
+                        values['subject'] = "Approver Timesheet Reminder"
+                        # values['email_from'] = self.env['res.users'].browse(self.env['res.users']._context['uid']).partner_id.email
+                        msg_id = self.env['mail.mail'].create({
+                            'body_html': values['body_html'],
+                            'subject':values['subject'],
+                            'email_to':timesheet_ids[0].project_id.user_id.login,})
+                        if msg_id:
+                            msg_id.send()
 
-
+    ''' Send Email To Approver Regarding Timesheet Not Submitted '''
     @api.model
     def send_approver_employee_timesheet_reminder_notification(self):
         today = fields.Date.context_today(self)
@@ -181,10 +198,18 @@ class AccountAnalyticLine(models.Model):
 
                     elif select_week == '5':
                         timesheet_ids = self.env['account.analytic.line'].search([('task_id', '=', pro.id), ('validated_status', '=', 'draft'), ('date', '>=', date_start_5week.date()), ('date', '<=',  date_end_5week.date())])
-                       
-                    if timesheet_ids:
-                        template_id = self.env.ref('awb_timesheet_notification.email_approver_employee_timesheet_reminder_template')
-                        template_id.send_mail(timesheet_ids[0].project_id.user_id.id, force_send=True)
+                    template_id =  self.env['ir.model.data']._xmlid_to_res_id('awb_timesheet_notification.email_approver_employee_timesheet_reminder_template')
+                    template_browse = self.env['mail.template'].browse(template_id)
+                    if template_browse and timesheet_ids:
+                        values = template_browse.generate_email(timesheet_ids[0].project_id.user_id.id, ['subject', 'body_html', 'email_from', 'email_to'])
+                        values['subject'] = "Approver Employee Timesheet Reminder"
+                        # values['email_from'] = self.env['res.users'].browse(self.env['res.users']._context['uid']).partner_id.email
+                        msg_id = self.env['mail.mail'].create({
+                            'body_html': values['body_html'],
+                            'subject':values['subject'],
+                            'email_to':timesheet_ids[0].project_id.user_id.login,})
+                        if msg_id:
+                            msg_id.send()
 
 
 
