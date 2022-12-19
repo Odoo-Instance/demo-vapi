@@ -44,22 +44,27 @@ class hr_timesheet(models.Model):
     def _timesheet_get_portal_domain(self):
 
         domain = super(hr_timesheet, self)._timesheet_get_portal_domain()
-        employee = self.env['hr.employee'].sudo().search(
-            [('user_id', '=', self.env.user.id)])
-        if employee:
-            print('emp')
-            return expression.AND([domain, [('employee_id', '=', employee.id)]])
-
-        else:
-            # print('part')
-            # partner_domain = expression.AND([domain, [('project_id.partner_id', '=',self.env.user.partner_id.id)]])
-            # state_domain = expression.AND([domain, [
-            #     ('validated_status', '!=', 'draft')]])
-
-            return expression.AND([domain, ['|', '&',
-                                            ('project_id.user_id', '=',
-                                             self.env.user.id), (
-                                            'project_id.partner_id', '=',
-                                            self.env.user.partner_id.id),
-                                            ('validated_status', '!=',
-                                             ["draft"])]])
+        # See all employees working for me on my projects
+        return expression.AND([domain, [
+                                        ('project_id.user_id', '=',
+                                         self.env.user.id)]])
+#         employee = self.env['hr.employee'].sudo().search(
+#             [('user_id', '=', self.env.user.id)])
+#         if employee:
+#             print('emp')
+#             return expression.AND([domain, [('employee_id', '=', employee.id)]])
+# 
+#         else:
+#             # print('part')
+#             # partner_domain = expression.AND([domain, [('project_id.partner_id', '=',self.env.user.partner_id.id)]])
+#             # state_domain = expression.AND([domain, [
+#             #     ('validated_status', '!=', 'draft')]])
+# 
+#             return expression.AND([domain, ['|', '&',
+#                                             ('project_id.user_id', '=',
+#                                              self.env.user.id), (
+#                                             'project_id.partner_id', '=',
+#                                             self.env.user.partner_id.id),
+#                                             ('validated_status', '!=',
+#                                              ["draft"])]])
+       
