@@ -6,7 +6,7 @@
 ##############################################################################
 {
     'name': 'AWB Timesheet Portal',
-    'version': '15.0.1.0.4',
+    'version': '15.0.1.0.5',
     'author': "Achieve Without Borders, Inc.",
     'website': "https://www.achievewithoutborders.com/",
     'description': """ Description Text """,
