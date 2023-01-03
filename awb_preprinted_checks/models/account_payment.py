@@ -12,11 +12,6 @@ class AccountPayment(models.Model):
 
     amount_in_words = fields.Char(string='Amount In Text', compute='_get_amount_in_words')
 
-    # def _amount_to_word(self):
-    #     p = inflect.engine()
-    #     num = p.number_to_words(self.amount)
-    #     _logger.debug(f'####################### NUM : {num}')
-    #     self.amount_to_text = num
     @api.depends('amount')
     def _get_amount_in_words(self):
         for rec in self:
