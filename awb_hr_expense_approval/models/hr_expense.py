@@ -24,7 +24,7 @@ class HrExpenseSheet(models.Model):
             'approval_condition': condition,
             'sequence': sequence + add_seq,
             'approver_id': approver_id,
-            'state': 'approved'
+            'state': 'pending'
         }
         _logger.debug(f'data {data}')
         return data
