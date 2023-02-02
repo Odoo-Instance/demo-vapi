@@ -63,9 +63,11 @@ class InheritedReportAccountFinancialReport(models.Model):
                     ))
             report_name = self._get_report_name()
             if 'Balance Sheet' in report_name:
-                if (financial_line.name == 'Bank and Cash Accounts') or (financial_line.name == 'Receivables')  or (financial_line.name == 'Prepayments') or (financial_line.name == 'Plus Fixed Assets') or (financial_line.code == 'CAS') or (financial_line.name == 'Plus Non-current Assets') or (financial_line.name == 'LIABILITIES') or (financial_line.code == 'CL1') or (financial_line.name == 'Payables') or (financial_line.name == 'Plus Non-current Liabilities') or (financial_line.name == 'Retained Earnings') or (financial_line.name == 'OFF BALANCE SHEET ACCOUNTS'):
-                    finan_lines = str(financial_line.dublicate_domain)
+                #Created Child lines Blance Sheet Report
+                if (financial_line.name == 'Bank and Cash Accounts') or (financial_line.code == 'REC') or (financial_line.code == 'CAS') or (financial_line.name == 'Prepayments') or (financial_line.name == 'Plus Fixed Assets') or (financial_line.code == 'CL1') or (financial_line.code == 'CL2') or (financial_line.name == 'Plus Non-current Assets') or (financial_line.name == 'Retained Earnings') or (financial_line.name == 'OFF BALANCE SHEET ACCOUNTS') or (financial_line.name == 'Plus Non-current Liabilities'):
+                    finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
+                    children_ids = financial_line.domain
                     if financial_line.children_ids:
                         a_name = []
                         for rec in financial_line.children_ids:
@@ -74,8 +76,11 @@ class InheritedReportAccountFinancialReport(models.Model):
                                 a_name.append(split_code[1].strip())
                             else:
                                 a_name.append(rec.name)
-                        for rec in financial_line.children_ids:
-                            a_name.append(rec.name)
+                        analytic_ids = []
+                        analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
+                        for analytic in analytic_account_id:
+                            analytic_ids.append(analytic.id)
+                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
                         for i in analytic_account:
                             self.env['account.financial.html.report.line'].sudo().create({'name':"["+str(i.code)+"]"+' '+i.name if i.code else i.name,
@@ -97,10 +102,14 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                  'groupby':'account_id',
                                                                  'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                 })
+                    financial_line.groupby = 'analytic_account_id'
+                    financial_line.domain = children_ids
             if 'Profit and Loss' in report_name:
+                #Created Child lines for profit and loss 
                 if (financial_line.name == 'Operating Income') or (financial_line.name == 'Cost of Revenue') or (financial_line.name == 'Other Income') or (financial_line.code == 'EXP')  or (financial_line.name == 'Depreciation'):
-                    finan_lines = str(financial_line.dublicate_domain)
+                    finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
+                    children_ids = financial_line.domain
                     if financial_line.children_ids:
                         a_name = []
                         for rec in financial_line.children_ids:
@@ -109,6 +118,11 @@ class InheritedReportAccountFinancialReport(models.Model):
                                 a_name.append(split_code[1].strip())
                             else:
                                 a_name.append(rec.name)
+                        analytic_ids = []
+                        analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
+                        for analytic in analytic_account_id:
+                            analytic_ids.append(analytic.id)
+                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
                         for i in analytic_account:
                             self.env['account.financial.html.report.line'].sudo().create({'name':"["+str(i.code)+"]"+' '+i.name if i.code else i.name,
@@ -130,6 +144,8 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                  'groupby':'account_id',
                                                                  'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                 })
+                #Added domain for all the child lines
+                    financial_line.domain = children_ids
             # Manage 'hide_if_zero' field without formulas.
             # If a line hi 'hide_if_zero' and has no formulas, we have to check the sum of all the columns from its children
             # If all sums are zero, we hide the line
@@ -210,7 +226,6 @@ class InheritedReportAccountFinancialReport(models.Model):
             if financial_line:
                 id = financial_line.parent_id.id
                 financial_report_line['parent_id'] = '-account.financial.html.report.line-'+str(id)
-            
                 
         # Only run the checks in debug mode
         if self.user_has_groups('base.group_no_one'):
@@ -244,8 +259,4 @@ class InheritedReportAccountFinancialReport(models.Model):
              
         return financial_report_line
     
-    class AccountFinancialReportLine(models.Model):
-        _inherit = "account.financial.html.report.line"
-        
-        dublicate_domain = fields.Char(default=None)
      

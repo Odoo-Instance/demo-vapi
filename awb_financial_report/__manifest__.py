@@ -15,7 +15,7 @@
     'author': "Achieve Without Borders, Inc",
     'website': "http://www.achievewithoutborders.com",
     'category': "Operations/Expense",
-    'version': '15.0.1.0.0',
+    'version': '15.0.1.0.1',
     'depends': ['account_reports'],
     'data': [
         'views/financial_report.xml',
