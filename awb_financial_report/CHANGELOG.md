@@ -7,4 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [15.0.1.0.1] - 2023-02-02
 [FIX] - Resolved total lines calculations not updated peroperly in Profit & loss and Balance Sheet report.
+
+## [15.0.1.0.1] - 2023-02-03
+[FIX] - Resolved while filter analytic accounts name not showing properly in profit & loss and Balance Sheet report.
   
