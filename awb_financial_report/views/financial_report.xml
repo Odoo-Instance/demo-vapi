@@ -116,5 +116,12 @@
          <record id="account_reports.account_financial_report_total_assets0" model="account.financial.html.report.line">
             <field name="control_domain"/>
         </record>
+        <!-- Removed domain -->
+        <record id="account_reports.account_financial_report_current_assets_view0" model="account.financial.html.report.line">
+            <field name="control_domain"/>
+        </record>
+        <record id="account_reports.account_financial_report_current_liabilities0" model="account.financial.html.report.line">
+            <field name="control_domain"/>
+        </record>
      </data>
  </odoo>

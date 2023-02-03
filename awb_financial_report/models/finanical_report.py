@@ -67,7 +67,8 @@ class InheritedReportAccountFinancialReport(models.Model):
                 if (financial_line.name == 'Bank and Cash Accounts') or (financial_line.code == 'REC') or (financial_line.code == 'CAS') or (financial_line.name == 'Prepayments') or (financial_line.name == 'Plus Fixed Assets') or (financial_line.code == 'CL1') or (financial_line.code == 'CL2') or (financial_line.name == 'Plus Non-current Assets') or (financial_line.name == 'Retained Earnings') or (financial_line.name == 'OFF BALANCE SHEET ACCOUNTS') or (financial_line.name == 'Plus Non-current Liabilities'):
                     finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
-                    children_ids = financial_line.domain
+                    #children_ids = financial_line.domain
+                    analytic_ids = []
                     if financial_line.children_ids:
                         a_name = []
                         for rec in financial_line.children_ids:
@@ -76,11 +77,12 @@ class InheritedReportAccountFinancialReport(models.Model):
                                 a_name.append(split_code[1].strip())
                             else:
                                 a_name.append(rec.name)
-                        analytic_ids = []
+                        
                         analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
                         for analytic in analytic_account_id:
                             analytic_ids.append(analytic.id)
-                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
+                        
+                        #children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
                         for i in analytic_account:
                             self.env['account.financial.html.report.line'].sudo().create({'name':"["+str(i.code)+"]"+' '+i.name if i.code else i.name,
@@ -103,6 +105,10 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                  'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                 })
                     financial_line.groupby = 'analytic_account_id'
+                    if analytic_ids:
+                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
+                    else:
+                        children_ids = financial_line.domain
                     financial_line.domain = children_ids
             if 'Profit and Loss' in report_name:
                 #Created Child lines for profit and loss 
@@ -222,10 +228,41 @@ class InheritedReportAccountFinancialReport(models.Model):
         'action_id': financial_line.action_id.id,
         }
         report_name = self._get_report_name()
-        if 'Profit and Loss' or 'Balance Sheet' in report_name: 
+        #If only show selected analytic accounts name
+        if 'Profit and Loss' in report_name: 
             if financial_line:
                 id = financial_line.parent_id.id
                 financial_report_line['parent_id'] = '-account.financial.html.report.line-'+str(id)
+                options_lines = options.get('selected_analytic_account_names')
+                if (financial_line.name != 'Operating Income') and (financial_line.name != 'Cost of Revenue') and (financial_line.name != 'Gross Profit') and (financial_line.name != 'Other Income') and (financial_line.name != 'Depreciation'):
+                    if (financial_line.domain != False):
+                        if options_lines:
+                            split_code = (financial_line.name).split(']')
+                            if len(split_code) > 1 :
+                                finance_line_name = split_code[1].strip()
+                            else:
+                                finance_line_name = financial_line.name
+                            if finance_line_name in options_lines:
+                                financial_report_line['style'] = 'color:black'
+                            else:
+                                financial_report_line['style'] = 'display:none'
+        if 'Balance Sheet' in report_name: 
+            if financial_line:
+                id = financial_line.parent_id.id
+                financial_report_line['parent_id'] = '-account.financial.html.report.line-'+str(id)
+                options_lines = options.get('selected_analytic_account_names')
+                if (financial_line.name != 'Bank and Cash Accounts') and (financial_line.code != 'REC') and (financial_line.name != 'Prepayments') and (financial_line.name != 'Plus Fixed Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.code != 'CL2') and (financial_line.name != 'Plus Non-current Liabilities') and (financial_line.name != 'Retained Earnings'):
+                    if (financial_line.domain != False):
+                        if options_lines:
+                            split_code = (financial_line.name).split(']')
+                            if len(split_code) > 1 :
+                                finance_line_name = split_code[1].strip()
+                            else:
+                                finance_line_name = financial_line.name
+                            if finance_line_name in options_lines:
+                                financial_report_line['style'] = 'color:black'
+                            else:
+                                financial_report_line['style'] = 'display:none'
                 
         # Only run the checks in debug mode
         if self.user_has_groups('base.group_no_one'):
