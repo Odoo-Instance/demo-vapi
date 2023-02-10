@@ -19,7 +19,7 @@
     'license': 'LGPL-3',
     'depends': ['account_reports'],
     'data': [
-        'views/financial_report.xml',
+       
     ],
     'installable': True,
     'application': False,
