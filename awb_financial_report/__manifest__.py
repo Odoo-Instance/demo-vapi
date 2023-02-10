@@ -18,7 +18,7 @@
     'version': '15.0.1.0.3',
     'depends': ['account_reports'],
     'data': [
-        'views/financial_report.xml',
+       
     ],
     'installable': True,
     'application': False,
