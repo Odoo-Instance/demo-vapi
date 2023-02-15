@@ -62,81 +62,85 @@ class InheritedReportAccountFinancialReport(models.Model):
                         groupby_keys,
                     ))
             report_name = self._get_report_name()
-            if 'Balance Sheet' in report_name:
-                #Created Child lines Blance Sheet Report
-                if (financial_line.name == 'Bank and Cash Accounts') or (financial_line.code == 'REC') or (financial_line.code == 'CAS') or (financial_line.name == 'Prepayments') or (financial_line.name == 'Plus Fixed Assets') or (financial_line.code == 'CL1') or (financial_line.code == 'CL2') or (financial_line.name == 'Plus Non-current Assets') or (financial_line.name == 'Retained Earnings') or (financial_line.name == 'OFF BALANCE SHEET ACCOUNTS') or (financial_line.name == 'Plus Non-current Liabilities'):
-                    finan_lines = str(financial_line.domain)
-                    val = finan_lines[1:-1]
-                    analytic_ids = []
-                    if financial_line.children_ids:
-                        a_name = []
-                        for rec in financial_line.children_ids:
-                            #Removed Child lines code in Balance Sheet report
-                            split_code = (rec.name).split(']')
-                            if len(split_code) > 1 :
-                                a_name.append(split_code[1].strip())
-                                child_name = split_code[1].strip()
-                            else:
-                                child_name = rec.name
-                                a_name.append(rec.name)
-                            rec.name = child_name
-                        
-                        analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
-                        for analytic in analytic_account_id:
-                            analytic_ids.append(analytic.id)
-                        
-                        analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
-                        for i in analytic_account:
-                            self.env['account.financial.html.report.line'].sudo().create({'name':i.name,
-                                                                'sequence':3,
-                                                                'level':4,
-                                                                 'parent_id':financial_line.id,
-                                                                 'formulas':'sum',
-                                                                 'groupby':'account_id',
-                                                                 'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
-                                                                })
-                    else:
-                        #Created Child lines
-                        if (financial_line.groupby and financial_line.domain) :
-                            analytic_account = self.env['account.analytic.account'].search([])
-                            for i in analytic_account:
-                                financial_line.children_ids.create({'name':i.name,
-                                                                    'sequence':3,
-                                                                    'level':4,
-                                                                    'formulas':'sum',
-                                                                     'parent_id':financial_line.id,
-                                                                     'groupby':'account_id',
-                                                                     'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
-                                                                    })
-                    financial_line.groupby = 'analytic_account_id'
-                    if analytic_ids:
-                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
-                    else:
-                        children_ids = financial_line.domain
-                    financial_line.domain = children_ids
+#             if 'Balance Sheet' in report_name:
+#                 #Created Child lines Blance Sheet Report
+#                 #if (financial_line.name == 'Bank and Cash Accounts') or (financial_line.code == 'REC') or (financial_line.code == 'CAS') or (financial_line.name == 'Prepayments') or (financial_line.name == 'Plus Fixed Assets') or (financial_line.code == 'CL1') or (financial_line.code == 'CL2') or (financial_line.name == 'Plus Non-current Assets') or (financial_line.name == 'Retained Earnings') or (financial_line.name == 'OFF BALANCE SHEET ACCOUNTS') or (financial_line.name == 'Plus Non-current Liabilities'):
+#                 if (financial_line.groupby == 'analytic_account_id') :    
+#                     finan_lines = str(financial_line.domain)
+#                     val = finan_lines[1:-1]
+#                     analytic_ids = []
+#                     if financial_line.children_ids:
+#                         a_name = []
+#                         for rec in financial_line.children_ids:
+#                             #Removed Child lines code in Balance Sheet report
+#                             split_code = (rec.name).split(']')
+#                             if len(split_code) > 1 :
+#                                 a_name.append(split_code[1].strip())
+#                                 child_name = split_code[1].strip()
+#                             else:
+#                                 child_name = rec.name
+#                                 a_name.append(rec.name)
+#                             rec.name = child_name
+#                         
+#                         analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
+#                         for analytic in analytic_account_id:
+#                             analytic_ids.append(analytic.id)
+#                         
+#                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
+#                         for i in analytic_account:
+#                             self.env['account.financial.html.report.line'].sudo().create({'name':i.name,
+#                                                                 'sequence':3,
+#                                                                 'level':4,
+#                                                                  'parent_id':financial_line.id,
+#                                                                  'formulas':'sum',
+#                                                                  'groupby':'account_id',
+#                                                                  'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
+#                                                                 })
+#                     else:
+#                         #Created Child lines
+#                         if (financial_line.groupby and financial_line.domain) :
+#                             analytic_account = self.env['account.analytic.account'].search([])
+#                             for i in analytic_account:
+#                                 financial_line.children_ids.create({'name':i.name,
+#                                                                     'sequence':3,
+#                                                                     'level':4,
+#                                                                     'formulas':'sum',
+#                                                                      'parent_id':financial_line.id,
+#                                                                      'groupby':'account_id',
+#                                                                      'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
+#                                                                     })
+#                     financial_line.groupby = 'analytic_account_id'
+#                     if analytic_ids:
+#                         children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
+#                     else:
+#                         children_ids = financial_line.domain
+#                     financial_line.domain = children_ids
             if 'Profit and Loss' in report_name:
                 #Created Child lines for profit and loss 
-                if (financial_line.name == 'Operating Income') or (financial_line.name == 'Cost of Revenue') or (financial_line.name == 'Other Income') or (financial_line.code == 'EXP')  or (financial_line.name == 'Depreciation') or (financial_line.name == 'Net Sales') or (financial_line.name == 'Cost of Sales'):
+                if ((financial_line.name == 'Operating Income') or (financial_line.name == 'Cost of Revenue') or (financial_line.name == 'Other Income') or (financial_line.code == 'EXP')  or (financial_line.name == 'Depreciation') or (financial_line.name == 'Net Sales') or (financial_line.name == 'Cost of Sales') or (financial_line.groupby == 'analytic_account_id')) and (financial_line.name != 'Undefined'):
                     finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
-                    children_ids = financial_line.domain
+                    #children_ids = financial_line.domain
                     #Removed Child lines code in profit and loss report
                     if financial_line.children_ids:
                         a_name = []
+                        undefined_val=[]
                         for rec in financial_line.children_ids:
-                            split_code = (rec.name).split(']')
-                            if len(split_code) > 1 :
-                                a_name.append(split_code[1].strip())
-                                child_name = split_code[1].strip()
-                            else:
-                                child_name = rec.name
-                                a_name.append(rec.name)
-                            rec.name = child_name
+                            undefined_val.append(rec.name)
+                            #if not split empty name
+                            #split_code = (rec.name).split(']') if (rec.name).split(']') else ''
+#                             if len(split_code) > 1 :
+#                                 a_name.append(split_code[1].strip())
+#                                 child_name = split_code[1].strip()
+#                             else:
+                                #child_name = rec.name
+                            a_name.append(rec.name)
+                            rec.name = rec.name
                         analytic_ids = []
                         analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
                         for analytic in analytic_account_id:
                             analytic_ids.append(analytic.id)
-                        children_ids = "["+val+","+"('analytic_account_id','in',"+str(analytic_ids)+")]"
+                        #children_ids = "["+val+"]"
                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
                         for i in analytic_account:
                             self.env['account.financial.html.report.line'].sudo().create({'name':i.name,
@@ -147,6 +151,19 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                  'groupby':'account_id',
                                                                  'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                 })
+                        
+                        #Created Undefined lines
+                        if 'Undefined' not in undefined_val:
+                            list_1 = list(str(val).split("),"))
+                            undefined_name = "["+list_1[0]+",('analytic_account_id','=',False)]"
+                            financial_line.children_ids.create({'name':'Undefined',
+                                                        'sequence':3,
+                                                        'level':4,
+                                                        'formulas':'sum',
+                                                        'parent_id':financial_line.id,
+                                                        'groupby':'analytic_account_id',
+                                                        'domain':str(undefined_name),
+                                                        }) 
                     else:
                         #Created Child lines
                         if (financial_line.groupby and financial_line.domain) :
@@ -156,12 +173,17 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                     'sequence':3,
                                                                     'level':4,
                                                                     'formulas':'sum',
-                                                                     'parent_id':financial_line.id,
-                                                                     'groupby':'account_id',
-                                                                     'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
+                                                                    'parent_id':financial_line.id,
+                                                                    'groupby':'account_id',
+                                                                    'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                     })
+                            
+                                    
                 #Added domain for all the child lines
-                    financial_line.domain = children_ids
+                    if financial_line.groupby == 'analytic_account_id':
+                        split_val = list(str(val).split("),"))
+                        split_name = "["+split_val[0]+"]"
+                        financial_line.domain = split_name
             # Manage 'hide_if_zero' field without formulas.
             # If a line hi 'hide_if_zero' and has no formulas, we have to check the sum of all the columns from its children
             # If all sums are zero, we hide the line
@@ -256,23 +278,23 @@ class InheritedReportAccountFinancialReport(models.Model):
                                 financial_report_line['style'] = 'color:black'
                             else:
                                 financial_report_line['style'] = 'display:none'
-        if 'Balance Sheet' in report_name: 
-            if financial_line:
-                id = financial_line.parent_id.id
-                financial_report_line['parent_id'] = '-account.financial.html.report.line-'+str(id)
-                options_lines = options.get('selected_analytic_account_names')
-                if (financial_line.name != 'Bank and Cash Accounts') and (financial_line.code != 'REC') and (financial_line.name != 'Prepayments') and (financial_line.name != 'Plus Fixed Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.code != 'CL2') and (financial_line.name != 'Plus Non-current Liabilities') and (financial_line.name != 'Retained Earnings'):
-                    if (financial_line.domain != False):
-                        if options_lines:
-                            split_code = (financial_line.name).split(']')
-                            if len(split_code) > 1 :
-                                finance_line_name = split_code[1].strip()
-                            else:
-                                finance_line_name = financial_line.name
-                            if finance_line_name in options_lines:
-                                financial_report_line['style'] = 'color:black'
-                            else:
-                                financial_report_line['style'] = 'display:none'
+#         if 'Balance Sheet' in report_name: 
+#             if financial_line:
+#                 id = financial_line.parent_id.id
+#                 financial_report_line['parent_id'] = '-account.financial.html.report.line-'+str(id)
+#                 options_lines = options.get('selected_analytic_account_names')
+#                 if (financial_line.name != 'Bank and Cash Accounts') and (financial_line.code != 'REC') and (financial_line.name != 'Prepayments') and (financial_line.name != 'Plus Fixed Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.name != 'Plus Non-current Assets') and (financial_line.code != 'CL2') and (financial_line.name != 'Plus Non-current Liabilities') and (financial_line.name != 'Retained Earnings'):
+#                     if (financial_line.domain != False):
+#                         if options_lines:
+#                             split_code = (financial_line.name).split(']')
+#                             if len(split_code) > 1 :
+#                                 finance_line_name = split_code[1].strip()
+#                             else:
+#                                 finance_line_name = financial_line.name
+#                             if finance_line_name in options_lines:
+#                                 financial_report_line['style'] = 'color:black'
+#                             else:
+#                                 financial_report_line['style'] = 'display:none'
                 
         # Only run the checks in debug mode
         if self.user_has_groups('base.group_no_one'):
