@@ -6,6 +6,23 @@ from odoo import models, fields, api
 class InheritedReportAccountFinancialReport(models.Model):
     _inherit = "account.financial.html.report"
     
+    #updated domain values for profit and loss report
+    def domain_update(self):
+        lines = self.env['account.financial.html.report.line'].sudo().search([])
+        for i in lines:
+            if (i.name == 'Cost of Sales'):
+                i.domain = "[('account_id.user_type_id', '=',17)]" 
+            if (i.name == 'Net Sales'):
+                i.domain = "[('account_id.user_type_id', '=',13)]" 
+            if (i.name == 'Expenses'):
+                i.domain = "[('account_id.user_type_id', '=',15)]" 
+            if (i.name == 'Depreciation'):
+                i.domain = "[('account_id.user_type_id', '=',16)]" 
+            if (i.name == 'Other Income'):
+                i.domain = "[('account_id.user_type_id', '=',14)]" 
+            if (i.name == 'Other Expenses'):
+                i.domain = "[('account_id.user_type_id', '=',25)]" 
+        
     #Added Child lines
     @api.model
     def _build_lines_hierarchy(self, options_list, financial_lines, solver, groupby_keys):
@@ -120,7 +137,6 @@ class InheritedReportAccountFinancialReport(models.Model):
                 if ((financial_line.name == 'Operating Income') or (financial_line.name == 'Cost of Revenue') or (financial_line.name == 'Other Income') or (financial_line.code == 'EXP')  or (financial_line.name == 'Depreciation') or (financial_line.name == 'Net Sales') or (financial_line.name == 'Cost of Sales') or (financial_line.groupby == 'analytic_account_id')) and (financial_line.name != 'Undefined'):
                     finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
-                    #children_ids = financial_line.domain
                     #Removed Child lines code in profit and loss report
                     if financial_line.children_ids:
                         a_name = []
@@ -140,7 +156,6 @@ class InheritedReportAccountFinancialReport(models.Model):
                         analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
                         for analytic in analytic_account_id:
                             analytic_ids.append(analytic.id)
-                        #children_ids = "["+val+"]"
                         analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
                         for i in analytic_account:
                             self.env['account.financial.html.report.line'].sudo().create({'name':i.name,
@@ -154,8 +169,7 @@ class InheritedReportAccountFinancialReport(models.Model):
                         
                         #Created Undefined lines
                         if 'Undefined' not in undefined_val:
-                            list_1 = list(str(val).split("),"))
-                            undefined_name = "["+list_1[0]+",('analytic_account_id','=',False)]"
+                            undefined_name = "["+str(val)+",('analytic_account_id','=',False)]"
                             financial_line.children_ids.create({'name':'Undefined',
                                                         'sequence':3,
                                                         'level':4,
@@ -178,12 +192,6 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                     'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
                                                                     })
                             
-                                    
-                #Added domain for all the child lines
-                    if financial_line.groupby == 'analytic_account_id':
-                        split_val = list(str(val).split("),"))
-                        split_name = "["+split_val[0]+"]"
-                        financial_line.domain = split_name
             # Manage 'hide_if_zero' field without formulas.
             # If a line hi 'hide_if_zero' and has no formulas, we have to check the sum of all the columns from its children
             # If all sums are zero, we hide the line
