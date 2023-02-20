@@ -138,35 +138,39 @@ class InheritedReportAccountFinancialReport(models.Model):
                     finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
                     #Removed Child lines code in profit and loss report
+                    financial_line.formulas = 'sum'
                     if financial_line.children_ids:
                         a_name = []
                         undefined_val=[]
                         for rec in financial_line.children_ids:
                             undefined_val.append(rec.name)
-                            #if not split empty name
-                            #split_code = (rec.name).split(']') if (rec.name).split(']') else ''
-#                             if len(split_code) > 1 :
-#                                 a_name.append(split_code[1].strip())
-#                                 child_name = split_code[1].strip()
-#                             else:
-                                #child_name = rec.name
                             a_name.append(rec.name)
                             rec.name = rec.name
-                        analytic_ids = []
-                        analytic_account_id = self.env['account.analytic.account'].search([('name','in',a_name)])
-                        for analytic in analytic_account_id:
-                            analytic_ids.append(analytic.id)
-                        analytic_account = self.env['account.analytic.account'].search([('name','not in',a_name)])
-                        for i in analytic_account:
-                            self.env['account.financial.html.report.line'].sudo().create({'name':i.name,
+                        account_move_line = self.env['account.move.line'].search([])
+                        move_id = []
+                        #If analytic account is archived, do not show in report.
+                        for line in account_move_line:
+                            if line.analytic_account_id.name != False:
+                                move_id.append(line.analytic_account_id.name)
+                        list_act_name = list(set(move_id))
+                        for lines_name in financial_line.children_ids:
+                            if lines_name.name not in list_act_name:
+                                if lines_name.name != 'Undefined':
+                                    lines_name.unlink()
+                        line_ids = []
+                        for lines_ids in financial_line.children_ids:
+                            lines_ids.formulas = '-sum'
+                            line_ids.append(lines_ids.name)
+                        for move_ids in list_act_name:
+                            if move_ids not in line_ids:
+                                self.env['account.financial.html.report.line'].sudo().create({'name':move_ids,
                                                                 'sequence':3,
                                                                 'level':4,
                                                                  'parent_id':financial_line.id,
                                                                  'formulas':'sum',
                                                                  'groupby':'account_id',
-                                                                 'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
+                                                                 'domain':"[('analytic_account_id.name', '=', '"+move_ids+"'),"+str(val)+"]",
                                                                 })
-                        
                         #Created Undefined lines
                         if 'Undefined' not in undefined_val:
                             undefined_name = "["+str(val)+",('analytic_account_id','=',False)]"
@@ -182,15 +186,25 @@ class InheritedReportAccountFinancialReport(models.Model):
                         #Created Child lines
                         if (financial_line.groupby and financial_line.domain) :
                             analytic_account = self.env['account.analytic.account'].search([])
+                            analytic_act_id = []
                             for i in analytic_account:
-                                financial_line.children_ids.create({'name':i.name,
+                                analytic_act_id.append(i.id)
+                            account_move_line = self.env['account.move.line'].search([])
+                            move_id = []
+                            for line in account_move_line:
+                                if line.analytic_account_id.name != False:
+                                    move_id.append(line.analytic_account_id.name)
+                            list_move_id = list(set(move_id))
+                            for act_id in list_move_id:
+                                financial_line.children_ids.create({'name':act_id,
                                                                     'sequence':3,
                                                                     'level':4,
-                                                                    'formulas':'sum',
+                                                                    'formulas':'-sum',
                                                                     'parent_id':financial_line.id,
                                                                     'groupby':'account_id',
-                                                                    'domain':"[('analytic_account_id.name', '=', '"+i.name+"'),"+str(val)+"]",
+                                                                    'domain':"[('analytic_account_id.name', '=', '"+act_id+"'),"+str(val)+"]",
                                                                     })
+                             
                             
             # Manage 'hide_if_zero' field without formulas.
             # If a line hi 'hide_if_zero' and has no formulas, we have to check the sum of all the columns from its children
