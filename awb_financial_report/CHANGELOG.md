@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [15.0.1.0.7] - 2023-02-21
+[FIX] - Cost of Sales is absolute value so that in the formula PROFIT = NET SALES - COST OF SALES will not be double negative (resulting in positive).
+
 ## [15.0.1.0.6] - 2023-02-20
 [FIX] - If analytic account is archived, do not show in report.
 [FIX] - If analytic account is selected in filter, only show analytic accounts selected in filter.

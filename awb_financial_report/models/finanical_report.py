@@ -10,18 +10,43 @@ class InheritedReportAccountFinancialReport(models.Model):
     def domain_update(self):
         lines = self.env['account.financial.html.report.line'].sudo().search([])
         for i in lines:
+            #Added formulas for all the child lines
             if (i.name == 'Cost of Sales'):
                 i.domain = "[('account_id.user_type_id', '=',17)]" 
+                i.formulas = 'sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = 'sum'
             if (i.name == 'Net Sales'):
                 i.domain = "[('account_id.user_type_id', '=',13)]" 
+                i.formulas = '-sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = '-sum'
             if (i.name == 'Expenses'):
                 i.domain = "[('account_id.user_type_id', '=',15)]" 
+                i.formulas = 'sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = 'sum'
             if (i.name == 'Depreciation'):
                 i.domain = "[('account_id.user_type_id', '=',16)]" 
+                i.formulas = 'sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = 'sum'
             if (i.name == 'Other Income'):
                 i.domain = "[('account_id.user_type_id', '=',14)]" 
+                i.formulas = '-sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = '-sum'
             if (i.name == 'Other Expenses'):
                 i.domain = "[('account_id.user_type_id', '=',25)]" 
+                i.formulas = 'sum'
+                if i.children_ids:
+                    for child in i.children_ids:
+                        child.formulas = 'sum'
         
     #Added Child lines
     @api.model
@@ -138,7 +163,6 @@ class InheritedReportAccountFinancialReport(models.Model):
                     finan_lines = str(financial_line.domain)
                     val = finan_lines[1:-1]
                     #Removed Child lines code in profit and loss report
-                    financial_line.formulas = 'sum'
                     if financial_line.children_ids:
                         a_name = []
                         undefined_val=[]
@@ -159,7 +183,6 @@ class InheritedReportAccountFinancialReport(models.Model):
                                     lines_name.unlink()
                         line_ids = []
                         for lines_ids in financial_line.children_ids:
-                            lines_ids.formulas = '-sum'
                             line_ids.append(lines_ids.name)
                         for move_ids in list_act_name:
                             if move_ids not in line_ids:
@@ -167,7 +190,7 @@ class InheritedReportAccountFinancialReport(models.Model):
                                                                 'sequence':3,
                                                                 'level':4,
                                                                  'parent_id':financial_line.id,
-                                                                 'formulas':'sum',
+                                                                 'formulas':financial_line.formulas,
                                                                  'groupby':'account_id',
                                                                  'domain':"[('analytic_account_id.name', '=', '"+move_ids+"'),"+str(val)+"]",
                                                                 })
@@ -177,7 +200,7 @@ class InheritedReportAccountFinancialReport(models.Model):
                             financial_line.children_ids.create({'name':'Undefined',
                                                         'sequence':3,
                                                         'level':4,
-                                                        'formulas':'sum',
+                                                        'formulas':financial_line.formulas,
                                                         'parent_id':financial_line.id,
                                                         'groupby':'analytic_account_id',
                                                         'domain':str(undefined_name),
@@ -199,7 +222,7 @@ class InheritedReportAccountFinancialReport(models.Model):
                                 financial_line.children_ids.create({'name':act_id,
                                                                     'sequence':3,
                                                                     'level':4,
-                                                                    'formulas':'-sum',
+                                                                    'formulas':financial_line.formulas,
                                                                     'parent_id':financial_line.id,
                                                                     'groupby':'account_id',
                                                                     'domain':"[('analytic_account_id.name', '=', '"+act_id+"'),"+str(val)+"]",
