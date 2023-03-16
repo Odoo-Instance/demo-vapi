@@ -11,8 +11,3 @@ class ApprovalCategoryApprover(models.Model):
 
     employee_id = fields.Many2one('hr.employee', related="user_id.employee_id", string='Employee')
     approve_employee_type = fields.Selection(related="employee_id.approve_type", string="Position")
-
-    # @api.depends('category_id')
-    # def _compute_existing_user_ids(self):
-    #     for record in self:
-    #         record.existing_user_ids = record.category_id.approver_ids.user_id

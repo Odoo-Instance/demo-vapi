@@ -8,8 +8,9 @@
         <field name="arch" type="xml">
           
             <field name="amount" position="after">
-            	<field name="approval_type"/>
+            	<field name="approval_type" invisible="1"/>
             	<field name="purchase_id" attrs="{'invisible': [('approval_type', '!=', 'purchase_payment')]}"/>
+            	<field name="purchase_requester_id" attrs="{'invisible': [('approval_type', '!=', 'purchase_payment')]}"/>
             </field>
 
         </field>
