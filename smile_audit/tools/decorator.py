@@ -29,7 +29,7 @@ def audit_decorator(method):
             else result
         rule = self._get_audit_rule('create')
         if rule:
-            new_values = record.read(load='_classic_write')
+            new_values = record.read(fields=None, load='_classic_write')
             keys = new_values[0].keys()
             for key in keys:
                 if str(type(new_values[0][key])) == "<class 'markupsafe.Markup'>":
@@ -44,13 +44,13 @@ def audit_decorator(method):
                  self.ids != self._context.get('audit_rec_ids'))):
             rule = self._get_audit_rule('write')
         if rule:
-            old_values = self.sudo().read(load='_classic_write')
+            old_values = self.sudo().read(fields=None, load='_classic_write')
         result = audit_write.origin(self, vals)
         if rule:
             if audit_write.origin.__name__ == '_write':
                 new_values = get_new_values(self)
             else:
-                new_values = self.sudo().read(load='_classic_write')
+                new_values = self.sudo().read(fields=None, load='_classic_write')
             keys = new_values[0].keys()
             for key in keys:
                 if str(type(new_values[0][key])) == "<class 'markupsafe.Markup'>":
@@ -62,7 +62,7 @@ def audit_decorator(method):
     def audit_unlink(self):
         rule = self._get_audit_rule('unlink')
         if rule:
-            old_values = self.read(load='_classic_write')
+            old_values = self.read(fields=None, load='_classic_write')
             keys = old_values[0].keys()
             for key in keys:
                 if str(type(old_values[0][key])) == "<class 'markupsafe.Markup'>":
