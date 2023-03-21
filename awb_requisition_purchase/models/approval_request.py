@@ -13,6 +13,9 @@ class ApprovalRequest(models.Model):
     purchase_id = fields.Many2one(
         'purchase.order', string="Purchase")
     
+    purchase_requester_id = fields.Many2one(
+        'res.users', string="RFQ Requester")
+    
     approval_type = fields.Selection(related="category_id.approval_type")
     
     @api.onchange("purchase_id")
@@ -21,22 +24,38 @@ class ApprovalRequest(models.Model):
             self.partner_id = self.purchase_id.partner_id.id
             self.amount = self.purchase_id.amount_total
             
-    @api.depends('category_id', 'request_owner_id')
+            if self.purchase_id.order_line:
+                product_line_ids = self.env['approval.product.line'].search([('purchase_order_line_id','in',self.purchase_id.order_line.ids)])
+                if product_line_ids:
+                    self.purchase_requester_id = product_line_ids.mapped("approval_request_id")[0].request_owner_id.id
+                else:
+                    self.purchase_requester_id = False
+            
+    @api.depends('category_id', 'request_owner_id','purchase_requester_id')
     def _compute_approver_ids(self):
         res = super()._compute_approver_ids()
         for request in self:
+            
+            # if request.purchase_id:
+            #     if request.purchase_id.order_line:
+            #         product_line_ids = self.env['approval.product.line'].search([('purchase_order_line_id','in',request.purchase_id.order_line.ids)])
+            #         if product_line_ids:
+            #             request.purchase_requester_id = product_line_ids.mapped("approval_request_id")[0].request_owner_id.id
+            #         else:
+            #             request.purchase_requester_id = False
+            
             if request.category_id.approval_type == 'purchase_payment':
-                if request.request_owner_id:
-                    approver = request.approver_ids.filtered(lambda rec:rec.user_id.id == request.request_owner_id.id)
+                if request.purchase_requester_id:
+                    approver = request.approver_ids.filtered(lambda rec:rec.user_id.id == request.purchase_requester_id.id)
                     approver_id_vals = []
                     if not approver:
                         approver_id_vals.append(Command.create({
-                            'user_id': request.request_owner_id.id,
+                            'user_id': request.purchase_requester_id.id,
                             'status': 'new',
                         }))
                         request.update({'approver_ids': approver_id_vals})
                 approver_ids = request.approver_ids.filtered(lambda rec:rec.user_id.employee_id.approve_type != 'om')
-                remove_approver_ids = approver_ids.filtered(lambda rec:rec.user_id.id != request.request_owner_id.id)
+                remove_approver_ids = approver_ids.filtered(lambda rec:rec.user_id.id != request.purchase_requester_id.id)
                 for remove_approver_id in remove_approver_ids:
                     request.update({'approver_ids': [(3, remove_approver_id.id)]})
     
@@ -145,7 +164,7 @@ class ApprovalRequest(models.Model):
                     approvers.write({'status': 'pending'})
                     
     def purchase_payment_approval_process(self):
-        approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new' and approver.user_id.id == self.request_owner_id.id)
+        approvers = self.mapped('approver_ids').filtered(lambda approver: approver.status == 'new' and approver.user_id.id == self.purchase_requester_id.id)
         
         if approvers:
             approvers._create_activity()
